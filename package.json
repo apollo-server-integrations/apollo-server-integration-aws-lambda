@@ -1,6 +1,5 @@
 {
   "name": "@apollo/typescript-repo-template",
-  "private": true,
   "description": "A template for TypeScript projects with pre-configured tooling",
   "version": "0.0.0",
   "author": "Apollo <packages@apollographql.com>",
