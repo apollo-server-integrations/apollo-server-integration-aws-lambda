@@ -19,7 +19,7 @@
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
     "importsNotUsedAsValues": "error",
-    "lib": ["es2019", "esnext.asynciterable"],
+    "lib": ["es2019", "esnext.asynciterable", "DOM"],
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
