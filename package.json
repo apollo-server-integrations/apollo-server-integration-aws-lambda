@@ -52,8 +52,5 @@
   "volta": {
     "node": "16.17.0",
     "npm": "8.18.0"
-  },
-  "dependencies": {
-    "aws-lambda": "^1.0.7"
   }
 }
