@@ -1,0 +1,10 @@
+*
+!src/**/*
+src/**/__tests__/**
+!dist/**/*
+dist/**/__tests__/**
+!package.json
+!README.md
+!tsconfig.base.json
+!tsconfig.json
+!tsconfig.build.json

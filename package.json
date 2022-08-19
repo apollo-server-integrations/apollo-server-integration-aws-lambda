@@ -1,0 +1,51 @@
+{
+  "name": "@apollo/typescript-repo-template",
+  "private": true,
+  "description": "A template for TypeScript projects with pre-configured tooling",
+  "version": "0.0.0",
+  "author": "Apollo <packages@apollographql.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apollographql/typescript-repo-template"
+  },
+  "homepage": "https://github.com/apollographql/typescript-repo-template#readme",
+  "bugs": {
+    "url": "https://github.com/apollographql/typescript-repo-template/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=14.0"
+  },
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json",
+    "clean": "git clean -dfqX",
+    "install-with-npm-8.5": "npm i -g npm@^8.5.0 && npm i",
+    "postinstall": "npm run build",
+    "prettier-check": "prettier --check .",
+    "prettier-fix": "prettier --write .",
+    "publish-changeset": "changeset publish",
+    "spell-check": "cspell lint '**' --no-progress || (echo 'Add any real words to cspell-dict.txt.'; exit 1)",
+    "test": "jest",
+    "test:ci": "jest --coverage --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
+    "watch": "tsc --build --watch"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "0.4.6",
+    "@changesets/cli": "2.24.3",
+    "@types/jest": "28.1.7",
+    "@types/node": "14.18.24",
+    "cspell": "6.6.1",
+    "jest": "28.1.3",
+    "jest-junit": "14.0.0",
+    "prettier": "2.7.1",
+    "ts-jest": "28.0.8",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  },
+  "volta": {
+    "node": "16.17.0",
+    "npm": "8.18.0"
+  }
+}
