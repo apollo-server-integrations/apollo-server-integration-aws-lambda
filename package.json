@@ -30,12 +30,14 @@
     "test:ci": "jest --coverage --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
     "watch": "tsc --build --watch"
   },
+  "dependencies": {
+    "@types/aws-lambda": "latest"
+  },
   "devDependencies": {
     "@apollo/server-integration-testsuite": "^4.0.0-alpha.7",
     "@apollo/utils.withrequired": "latest",
     "@changesets/changelog-github": "0.4.6",
     "@changesets/cli": "2.24.3",
-    "@types/aws-lambda": "latest",
     "@types/jest": "28.1.7",
     "@types/node": "14.18.24",
     "cspell": "6.6.1",
