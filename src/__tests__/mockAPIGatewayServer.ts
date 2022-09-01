@@ -64,6 +64,7 @@ function eventFromRequest(
     queryStringParameters: {},
     requestContext: {
       accountId: "347971939225",
+      // cspell:ignore bwvllq KHTML
       apiId: "6bwvllq3t2",
       domainName: "6bwvllq3t2.execute-api.us-east-1.amazonaws.com",
       domainPrefix: "6bwvllq3t2",
