@@ -1,16 +1,16 @@
 {
-  "name": "@apollo/typescript-repo-template",
-  "description": "A template for TypeScript projects with pre-configured tooling",
+  "name": "@as-integration/aws-lambda",
+  "description": "An Apollo Server integration for hosting on AWS Lambda",
   "version": "0.0.0",
-  "author": "Apollo <packages@apollographql.com>",
+  "author": "Michael Watson & Daniel Abdelsamed",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apollographql/typescript-repo-template"
+    "url": "https://github.com/michael-watson/apollo-server-integration-aws-lambda"
   },
-  "homepage": "https://github.com/apollographql/typescript-repo-template#readme",
+  "homepage": "https://github.com/michael-watson/apollo-server-integration-aws-lambda#readme",
   "bugs": {
-    "url": "https://github.com/apollographql/typescript-repo-template/issues"
+    "url": "https://github.com/michael-watson/apollo-server-integration-aws-lambda/issues"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

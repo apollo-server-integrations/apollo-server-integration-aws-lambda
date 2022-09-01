@@ -10,9 +10,11 @@ import type {
   Context,
   APIGatewayProxyStructuredResultV2,
   APIGatewayProxyEventV2,
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
 } from 'aws-lambda';
 export interface LambdaContextFunctionArgument {
-  event: APIGatewayProxyEventV2;
+  event: APIGatewayProxyEventV2 | APIGatewayProxyEvent;
   context: Context;
 }
 
@@ -21,8 +23,8 @@ export interface LambdaHandlerOptions<TContext extends BaseContext> {
 }
 
 type LambdaHandler = Handler<
-  APIGatewayProxyEventV2,
-  APIGatewayProxyStructuredResultV2
+  APIGatewayProxyEventV2 | APIGatewayProxyEvent,
+  APIGatewayProxyStructuredResultV2 | APIGatewayProxyResult
 >;
 
 export function lambdaHandler(
@@ -83,25 +85,10 @@ export function lambdaHandler<TContext extends BaseContext>(
       throw error;
     }
 
-    const headers = new Map<string, string>();
-    for (const [key, value] of Object.entries(event.headers)) {
-      if (value !== undefined) {
-        // Node/Express headers can be an array or a single value. We join
-        // multi-valued headers with `, ` just like the Fetch API's `Headers`
-        // does. We assume that keys are already lower-cased (as per the Node
-        // docs on IncomingMessage.headers) and so we don't bother to lower-case
-        // them or combine across multiple keys that would lower-case to the
-        // same value.
-        headers.set(key, Array.isArray(value) ? value.join(', ') : value);
-      }
-    }
-
-    const httpGraphQLRequest: HTTPGraphQLRequest = {
-      method: event.requestContext.http.method,
-      headers,
-      search: event.rawQueryString,
-      body: parsedBody,
-    };
+    const httpGraphQLRequest: HTTPGraphQLRequest = createGraphQLRequest(
+      parsedBody,
+      event,
+    );
 
     try {
       const httpGraphQLResponse = await server.executeHTTPGraphQLRequest({
@@ -127,4 +114,33 @@ export function lambdaHandler<TContext extends BaseContext>(
       throw error;
     }
   };
+}
+
+function createGraphQLRequest(
+  parsedBody: string | object | undefined,
+  event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
+): HTTPGraphQLRequest {
+  const headers = new Map<string, string>();
+  for (const [key, value] of Object.entries(event.headers)) {
+    if (value !== undefined) {
+      // Node/Express headers can be an array or a single value. We join
+      // multi-valued headers with `, ` just like the Fetch API's `Headers`
+      // does. We assume that keys are already lower-cased (as per the Node
+      // docs on IncomingMessage.headers) and so we don't bother to lower-case
+      // them or combine across multiple keys that would lower-case to the
+      // same value.
+      headers.set(key, Array.isArray(value) ? value.join(', ') : value);
+    }
+  }
+
+  if ((<APIGatewayProxyEventV2>event).requestContext.http !== undefined) {
+    return {
+      method: (<APIGatewayProxyEventV2>event).requestContext.http.method,
+      headers,
+      search: (<APIGatewayProxyEventV2>event).rawQueryString,
+      body: parsedBody,
+    };
+  } else {
+    return {} as HTTPGraphQLRequest;
+  }
 }
