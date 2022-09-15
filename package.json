@@ -1,17 +1,16 @@
 {
-  "name": "@apollo/typescript-repo-template",
-  "private": true,
-  "description": "A template for TypeScript projects with pre-configured tooling",
+  "name": "@as-integration/aws-lambda",
+  "description": "An Apollo Server integration for hosting on AWS Lambda",
   "version": "0.0.0",
-  "author": "Apollo <packages@apollographql.com>",
+  "author": "Michael Watson & Daniel Abdelsamed",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apollographql/typescript-repo-template"
+    "url": "https://github.com/michael-watson/apollo-server-integration-aws-lambda"
   },
-  "homepage": "https://github.com/apollographql/typescript-repo-template#readme",
+  "homepage": "https://github.com/michael-watson/apollo-server-integration-aws-lambda#readme",
   "bugs": {
-    "url": "https://github.com/apollographql/typescript-repo-template/issues"
+    "url": "https://github.com/michael-watson/apollo-server-integration-aws-lambda/issues"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,18 +30,26 @@
     "test:ci": "jest --coverage --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
     "watch": "tsc --build --watch"
   },
+  "dependencies": {
+    "@types/aws-lambda": "latest"
+  },
   "devDependencies": {
+    "@apollo/server-integration-testsuite": "^4.0.0-alpha.10",
+    "@apollo/utils.withrequired": "1.0.0",
     "@changesets/changelog-github": "0.4.6",
-    "@changesets/cli": "2.24.3",
-    "@types/jest": "28.1.7",
+    "@changesets/cli": "2.24.4",
+    "@types/jest": "28.1.8",
     "@types/node": "14.18.24",
-    "cspell": "6.6.1",
+    "cspell": "6.8.1",
     "jest": "28.1.3",
-    "jest-junit": "14.0.0",
+    "jest-junit": "14.0.1",
     "prettier": "2.7.1",
     "ts-jest": "28.0.8",
     "ts-node": "10.9.1",
-    "typescript": "4.7.4"
+    "typescript": "4.8.2"
+  },
+  "peerDependencies": {
+    "@apollo/server": "^4.0.0-alpha.10"
   },
   "volta": {
     "node": "16.17.0",

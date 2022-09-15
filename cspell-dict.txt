@@ -5,4 +5,7 @@ cimg
 circleci
 codesandbox
 direnv
-opde
+testsuite
+unawaited
+vendia
+withrequired

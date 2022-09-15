@@ -83,7 +83,7 @@ If you're not interested in using `changesets`, just delete the [workflow](.gith
 
 CodeSandbox CI provides an installable build of your package on every PR. If your package builds successfully, CS:CI will leave a comment on the PR with instructions on how to try out your build in a project. This gives contributors access to their work immediately, allowing them to manually test their builds or even use a fix right away.
 
-CS:CI will also provide links to sandboxes which use your newly built package if you choose. This is configurable via the `sandboxes` field in [`.codesandbox/ci.json`](.codesandbox/ci.json). This field is a list of sandbox IDs which you can find via the CodeSandbox web interface. For example, the Apollo Server repo specifies both JS and TS Apollo Server sandboxes like so: `["apollo-server-typescript-3opde","apollo-server"]`.
+CS:CI will also provide links to sandboxes which use your newly built package if you choose. This is configurable via the `sandboxes` field in [`.codesandbox/ci.json`](.codesandbox/ci.json). This field is a list of sandbox IDs which you can find via the CodeSandbox web interface. For example, the Apollo Server repo specifies both JS and TS Apollo Server sandboxes like so: `["apollo-server-typescript","apollo-server"]`.
 
 > For additional information on configuring CS:CI, [visit the docs](https://codesandbox.io/docs/ci).
 
