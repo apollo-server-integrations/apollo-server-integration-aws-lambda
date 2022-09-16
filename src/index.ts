@@ -6,12 +6,12 @@ import type {
 } from '@apollo/server';
 import type { WithRequired } from '@apollo/utils.withrequired';
 import type {
-  Handler,
-  Context,
-  APIGatewayProxyStructuredResultV2,
-  APIGatewayProxyEventV2,
   APIGatewayProxyEvent,
+  APIGatewayProxyEventV2,
   APIGatewayProxyResult,
+  APIGatewayProxyStructuredResultV2,
+  Context,
+  Handler,
 } from 'aws-lambda';
 export interface LambdaContextFunctionArgument {
   event: APIGatewayProxyEventV2 | APIGatewayProxyEvent;

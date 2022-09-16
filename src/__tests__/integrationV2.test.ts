@@ -1,5 +1,4 @@
 import { ApolloServer, ApolloServerOptions, BaseContext } from '@apollo/server';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import {
   CreateServerForIntegrationTestsOptions,
   defineIntegrationTestSuite,
@@ -19,12 +18,6 @@ describe('lambdaHandler', () => {
       const httpServer = createServer();
       const server = new ApolloServer({
         ...serverOptions,
-        plugins: [
-          ...(serverOptions.plugins ?? []),
-          ApolloServerPluginDrainHttpServer({
-            httpServer,
-          }),
-        ],
       });
 
       const handler = testOptions
@@ -37,7 +30,15 @@ describe('lambdaHandler', () => {
         httpServer.listen({ port: 0 }, resolve);
       });
 
-      return { server, url: urlForHttpServer(httpServer) };
+      return {
+        server,
+        url: urlForHttpServer(httpServer),
+        async extraCleanup() {
+          await new Promise<void>((resolve) => {
+            httpServer.close(() => resolve());
+          });
+        }
+      };
     },
     {
       serverIsStartedInBackground: true,
