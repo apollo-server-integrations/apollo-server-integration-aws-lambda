@@ -8,7 +8,7 @@ import { createServer, Server } from 'http';
 import type { AddressInfo } from 'net';
 import { format } from 'url';
 import { lambdaHandler } from '..';
-import { createMockServer as createAPIGatewayMockServer } from './mockAPIGatewayServer';
+import { createMockServer as createAPIGatewayMockServer } from './mockAPIGatewayV2Server';
 
 describe('lambdaHandler', () => {
   defineIntegrationTestSuite(
