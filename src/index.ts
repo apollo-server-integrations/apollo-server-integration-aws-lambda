@@ -13,8 +13,11 @@ import type {
   Context,
   Handler,
 } from 'aws-lambda';
+
+export type GatewayEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2;
+
 export interface LambdaContextFunctionArgument {
-  event: APIGatewayProxyEventV2 | APIGatewayProxyEvent;
+  event: GatewayEvent;
   context: Context;
 }
 
@@ -23,7 +26,7 @@ export interface LambdaHandlerOptions<TContext extends BaseContext> {
 }
 
 type LambdaHandler = Handler<
-  APIGatewayProxyEventV2 | APIGatewayProxyEvent,
+  GatewayEvent,
   APIGatewayProxyStructuredResultV2 | APIGatewayProxyResult
 >;
 
@@ -86,9 +89,7 @@ export function lambdaHandler<TContext extends BaseContext>(
   };
 }
 
-function normalizeGatewayEvent(
-  event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
-): HTTPGraphQLRequest {
+function normalizeGatewayEvent(event: GatewayEvent): HTTPGraphQLRequest {
   if (isV1Event(event)) {
     return normalizeV1Event(event);
   } else if (isV2Event(event)) {
@@ -98,16 +99,12 @@ function normalizeGatewayEvent(
   }
 }
 
-function isV1Event(
-  event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
-): event is APIGatewayProxyEvent {
-  return 'httpMethod' in event;
+function isV1Event(event: GatewayEvent): event is APIGatewayProxyEvent {
+  return !('version' in event);
 }
 
-function isV2Event(
-  event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
-): event is APIGatewayProxyEventV2 {
-  return !isV1Event(event);
+function isV2Event(event: GatewayEvent): event is APIGatewayProxyEventV2 {
+  return 'version' in event && event.version === '2.0';
 }
 
 function normalizeV1Event(event: APIGatewayProxyEvent): HTTPGraphQLRequest {

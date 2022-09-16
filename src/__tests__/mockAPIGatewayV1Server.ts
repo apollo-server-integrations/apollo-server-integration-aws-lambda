@@ -1,47 +1,24 @@
-import url from "url";
-import type { IncomingMessage, ServerResponse } from "http";
+import url from 'url';
+import type { IncomingMessage } from 'http';
 import type {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
-  Context as LambdaContext,
   Handler,
-} from "aws-lambda";
+} from 'aws-lambda';
+import { createMockServer } from './mockServer';
 
-// Returns a Node http handler that invokes a Lambda handler as if via
-// APIGatewayProxy
-export function createMockServer(
-  handler: Handler,
+export function createMockV1Server(
+  handler: Handler<APIGatewayProxyEvent, APIGatewayProxyResult>,
 ) {
-  return (req: IncomingMessage, res: ServerResponse) => {
-    let body = "";
-    req.on("data", (chunk) => (body += chunk));
-    // this is an unawaited async function, but anything that causes it to
-    // reject should cause a test to fail
-    req.on("end", async () => {
-      const event = eventFromRequest(req, body);
-      const result = (await handler(
-        event,
-        { functionName: "someFunc" } as LambdaContext, // we don't bother with all the fields
-        () => {
-          throw Error("we don't use callback");
-        },
-      )) as APIGatewayProxyResult;
-      res.statusCode = result.statusCode!;
-      Object.entries(result.headers ?? {}).forEach(([key, value]) => {
-        res.setHeader(key, value.toString());
-      });
-      res.write(result.body);
-      res.end();
-    });
-  };
+  return createMockServer(handler, v1EventFromRequest);
 }
 
-function eventFromRequest(
+function v1EventFromRequest(
   req: IncomingMessage,
   body: string,
 ): APIGatewayProxyEvent {
-  const urlObject = url.parse(req.url || "", false);
-  const searchParams = new URLSearchParams(urlObject.search ?? "")
+  const urlObject = url.parse(req.url || '', false);
+  const searchParams = new URLSearchParams(urlObject.search ?? '');
 
   const multiValueQueryStringParameters: Record<string, string[]> = {};
   for (const [key] of searchParams.entries()) {

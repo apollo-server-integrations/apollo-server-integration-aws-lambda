@@ -3,13 +3,12 @@ import {
   CreateServerForIntegrationTestsOptions,
   defineIntegrationTestSuite,
 } from '@apollo/server-integration-testsuite';
-import { createServer, Server } from 'http';
-import type { AddressInfo } from 'net';
-import { format } from 'url';
+import { createServer } from 'http';
 import { lambdaHandler } from '..';
-import { createMockServer as createAPIGatewayMockServer } from './mockAPIGatewayV2Server';
+import { createMockV2Server } from './mockAPIGatewayV2Server';
+import { urlForHttpServer } from './mockServer';
 
-describe('lambdaHandler', () => {
+describe('lambdaHandlerV2', () => {
   defineIntegrationTestSuite(
     async function (
       serverOptions: ApolloServerOptions<BaseContext>,
@@ -24,7 +23,7 @@ describe('lambdaHandler', () => {
         ? lambdaHandler(server, testOptions)
         : lambdaHandler(server);
 
-      httpServer.addListener('request', createAPIGatewayMockServer(handler));
+      httpServer.addListener('request', createMockV2Server(handler));
 
       await new Promise<void>((resolve) => {
         httpServer.listen({ port: 0 }, resolve);
@@ -37,7 +36,7 @@ describe('lambdaHandler', () => {
           await new Promise<void>((resolve) => {
             httpServer.close(() => resolve());
           });
-        }
+        },
       };
     },
     {
@@ -45,22 +44,3 @@ describe('lambdaHandler', () => {
     },
   );
 });
-
-// Stolen from apollo server integration tests
-export function urlForHttpServer(httpServer: Server): string {
-  const { address, port } = httpServer.address() as AddressInfo;
-
-  // Convert IPs which mean "any address" (IPv4 or IPv6) into localhost
-  // corresponding loopback ip. Note that the url field we're setting is
-  // primarily for consumption by our test suite. If this heuristic is wrong for
-  // your use case, explicitly specify a frontend host (in the `host` option
-  // when listening).
-  const hostname = address === '' || address === '::' ? 'localhost' : address;
-
-  return format({
-    protocol: 'http',
-    hostname,
-    port,
-    pathname: '/',
-  });
-}
