@@ -28,7 +28,8 @@ function v1EventFromRequest(
     }
   }
 
-  const event: APIGatewayProxyEvent = {
+  // simplify the V1 event down to what our integration actually cares about
+  const event: Partial<APIGatewayProxyEvent> = {
     httpMethod: req.method!,
     headers: Object.fromEntries(
       Object.entries(req.headers).map(([name, value]) => {
@@ -43,45 +44,7 @@ function v1EventFromRequest(
     body,
     multiValueQueryStringParameters,
     multiValueHeaders: {},
-    path: urlObject.pathname || '',
-    pathParameters: {},
-    stageVariables: {},
-    resource: '',
-    requestContext: {
-      protocol: '',
-      httpMethod: req.method!,
-      path: urlObject.pathname!,
-      identity: {
-        accessKey: null,
-        accountId: null,
-        apiKey: null,
-        apiKeyId: null,
-        caller: null,
-        clientCert: null,
-        cognitoAuthenticationProvider: null,
-        cognitoAuthenticationType: null,
-        cognitoIdentityId: null,
-        cognitoIdentityPoolId: null,
-        principalOrgId: null,
-        sourceIp: '',
-        user: null,
-        userAgent: null,
-        userArn: null,
-      },
-      resourcePath: '',
-      requestTimeEpoch: Date.now(),
-      resourceId: '',
-      authorizer: undefined,
-      accountId: '347971939225',
-      // cspell:ignore bwvllq KHTML
-      apiId: '6bwvllq3t2',
-      domainName: '6bwvllq3t2.execute-api.us-east-1.amazonaws.com',
-      domainPrefix: '6bwvllq3t2',
-      requestId: 'YuSJQjZfoAMESbg=',
-      routeKey: '$default',
-      stage: '$default',
-    },
-    isBase64Encoded: false,
   };
-  return event;
+
+  return event as APIGatewayProxyEvent;
 }
