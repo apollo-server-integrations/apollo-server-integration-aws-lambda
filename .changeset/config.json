@@ -1,8 +1,8 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@1.6.3/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@2.1.1/schema.json",
   "changelog": [
     "@changesets/changelog-github",
-    { "repo": "apollographql/typescript-repo-template" }
+    { "repo": "michael-watson/apollo-server-integration-aws-lambda" }
   ],
   "commit": false,
   "access": "public",
