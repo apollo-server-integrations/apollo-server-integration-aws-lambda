@@ -94,11 +94,13 @@ export function lambdaHandler<TContext extends BaseContext>(
 function normalizeGatewayEvent(event: GatewayEvent): HTTPGraphQLRequest {
   if (isV1Event(event)) {
     return normalizeV1Event(event);
-  } else if (isV2Event(event)) {
-    return normalizeV2Event(event);
-  } else {
-    throw Error('Unknown event type');
   }
+  
+  if (isV2Event(event)) {
+    return normalizeV2Event(event);
+  }
+
+  throw Error('Unknown event type');
 }
 
 function isV1Event(event: GatewayEvent): event is APIGatewayProxyEvent {
@@ -147,15 +149,15 @@ function parseBody(
   body: string | null | undefined,
   contentType: string | undefined,
 ): object | string {
-  if (!body) {
-    return '';
-  } else if (contentType === 'application/json') {
-    return JSON.parse(body);
-  } else if (contentType === 'text/plain') {
-    return body;
-  } else {
-    return '';
+  if (body) {
+    if (contentType === 'application/json') {
+      return JSON.parse(body);
+    }
+    if (contentType === 'text/plain') {
+      return body;
+    }
   }
+  return '';
 }
 
 function normalizeHeaders(
