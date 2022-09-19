@@ -5,7 +5,7 @@ import {
 } from '@apollo/server-integration-testsuite';
 import type { Handler } from 'aws-lambda';
 import { createServer } from 'http';
-import { startAndCreateLambdaHandler } from '..';
+import { startServerAndCreateLambdaHandler } from '..';
 import { createMockV1Server } from './mockAPIGatewayV1Server';
 import { urlForHttpServer } from './mockServer';
 
@@ -21,8 +21,8 @@ describe('lambdaHandlerV1', () => {
       });
 
       const handler: Handler = testOptions
-        ? startAndCreateLambdaHandler(server, testOptions)
-        : startAndCreateLambdaHandler(server);
+        ? startServerAndCreateLambdaHandler(server, testOptions)
+        : startServerAndCreateLambdaHandler(server);
 
       httpServer.addListener('request', createMockV1Server(handler));
 
