@@ -7,6 +7,8 @@ import type {
 import type { WithRequired } from '@apollo/utils.withrequired';
 import type {
   APIGatewayProxyEvent,
+  APIGatewayProxyEventHeaders,
+  APIGatewayProxyEventQueryStringParameters,
   APIGatewayProxyEventV2,
   APIGatewayProxyResult,
   APIGatewayProxyStructuredResultV2,
@@ -110,21 +112,23 @@ function isV2Event(event: GatewayEvent): event is APIGatewayProxyEventV2 {
 function normalizeV1Event(event: APIGatewayProxyEvent): HTTPGraphQLRequest {
   const headers = normalizeHeaders(event.headers);
   const body = parseBody(event.body, headers.get('content-type'));
-  const reconstructedSearchString = Object.entries({
-    ...event.queryStringParameters,
-    ...event.multiValueQueryStringParameters,
-  }).reduce((queryString, next, i) => {
-    const delimiter = i === 0 ? '?' : '&';
-    const addition = Array.isArray(next[1])
-      ? next[1].map((v) => `${next[0]}=${v}`).join('&')
-      : `${next[0]}=${next[1]}`;
-    return `${queryString}${delimiter}${addition}`;
-  }, '');
+  // Single value parameters can be directly added
+  const searchParams = new URLSearchParams(
+    normalizeQueryStringParams(event.queryStringParameters),
+  );
+  // Passing a key with an array entry to the constructor yields
+  // one value in the querystring with %2C as the array was flattened to a string
+  // Multi values must be appended individually to get the to-spec output
+  for (const [key, values] of Object.entries(event.multiValueQueryStringParameters ?? {})) {
+    for (const value of values ?? []) {
+      searchParams.append(key, value);
+    }
+  }
 
   return {
     method: event.httpMethod,
     headers,
-    search: reconstructedSearchString,
+    search: searchParams.toString(),
     body,
   };
 }
@@ -155,11 +159,21 @@ function parseBody(
 }
 
 function normalizeHeaders(
-  headers: Record<string, string | undefined>,
+  headers: APIGatewayProxyEventHeaders,
 ): Map<string, string> {
   const headerMap = new Map<string, string>();
   for (const [key, value] of Object.entries(headers)) {
     headerMap.set(key, value ?? '');
   }
   return headerMap;
+}
+
+function normalizeQueryStringParams(
+  queryStringParams: APIGatewayProxyEventQueryStringParameters | null,
+): Record<string, string> {
+  const queryStringRecord: Record<string, string> = {};
+  for (const [key, value] of Object.entries(queryStringParams ?? {})) {
+    queryStringRecord[key] = value ?? '';
+  }
+  return queryStringRecord;
 }
