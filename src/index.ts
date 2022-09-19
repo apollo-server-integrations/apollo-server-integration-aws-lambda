@@ -6,15 +6,20 @@ import type {
 } from '@apollo/server';
 import type { WithRequired } from '@apollo/utils.withrequired';
 import type {
-  Handler,
-  Context,
-  APIGatewayProxyStructuredResultV2,
-  APIGatewayProxyEventV2,
   APIGatewayProxyEvent,
+  APIGatewayProxyEventHeaders,
+  APIGatewayProxyEventQueryStringParameters,
+  APIGatewayProxyEventV2,
   APIGatewayProxyResult,
+  APIGatewayProxyStructuredResultV2,
+  Context,
+  Handler,
 } from 'aws-lambda';
+
+export type GatewayEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2;
+
 export interface LambdaContextFunctionArgument {
-  event: APIGatewayProxyEventV2 | APIGatewayProxyEvent;
+  event: GatewayEvent;
   context: Context;
 }
 
@@ -23,7 +28,7 @@ export interface LambdaHandlerOptions<TContext extends BaseContext> {
 }
 
 type LambdaHandler = Handler<
-  APIGatewayProxyEventV2 | APIGatewayProxyEvent,
+  GatewayEvent,
   APIGatewayProxyStructuredResultV2 | APIGatewayProxyResult
 >;
 
@@ -55,44 +60,11 @@ export function lambdaHandler<TContext extends BaseContext>(
   > = options?.context ?? defaultContext;
 
   return async function (event, context) {
-    let parsedBody: object | string | undefined = undefined;
     try {
-      if (!event.body) {
-        // assert there's a query string?
-      } else if (event.headers['content-type'] === 'application/json') {
-        try {
-          parsedBody = JSON.parse(event.body);
-        } catch (e: unknown) {
-          return {
-            statusCode: 400,
-            body: (e as Error).message,
-          };
-        }
-      } else if (event.headers['content-type'] === 'text/plain') {
-        parsedBody = event.body;
-      }
-    } catch (error: unknown) {
-      // The json body-parser *always* sets req.body to {} if it's unset (even
-      // if the Content-Type doesn't match), so if it isn't set, you probably
-      // forgot to set up body-parser. (Note that this may change in the future
-      // body-parser@2.)
-      // return {
-      //   statusCode: 500,
-      //   body:
-      //     '`event.body` is not set; this probably means you forgot to set up the ' +
-      //     '`body-parser` middleware before the Apollo Server middleware.',
-      // };
-      throw error;
-    }
+      const normalizedEvent = normalizeGatewayEvent(event);
 
-    const httpGraphQLRequest: HTTPGraphQLRequest = createGraphQLRequest(
-      parsedBody,
-      event,
-    );
-
-    try {
       const httpGraphQLResponse = await server.executeHTTPGraphQLRequest({
-        httpGraphQLRequest,
+        httpGraphQLRequest: normalizedEvent,
         context: () => contextFunction({ event, context }),
       });
 
@@ -110,37 +82,100 @@ export function lambdaHandler<TContext extends BaseContext>(
         },
         body: httpGraphQLResponse.completeBody,
       };
-    } catch (error) {
-      throw error;
+    } catch (e) {
+      return {
+        statusCode: 400,
+        body: (e as Error).message,
+      };
     }
   };
 }
 
-function createGraphQLRequest(
-  parsedBody: string | object | undefined,
-  event: APIGatewayProxyEvent | APIGatewayProxyEventV2,
-): HTTPGraphQLRequest {
-  const headers = new Map<string, string>();
-  for (const [key, value] of Object.entries(event.headers)) {
-    if (value !== undefined) {
-      // Node/Express headers can be an array or a single value. We join
-      // multi-valued headers with `, ` just like the Fetch API's `Headers`
-      // does. We assume that keys are already lower-cased (as per the Node
-      // docs on IncomingMessage.headers) and so we don't bother to lower-case
-      // them or combine across multiple keys that would lower-case to the
-      // same value.
-      headers.set(key, Array.isArray(value) ? value.join(', ') : value);
+function normalizeGatewayEvent(event: GatewayEvent): HTTPGraphQLRequest {
+  if (isV1Event(event)) {
+    return normalizeV1Event(event);
+  }
+  
+  if (isV2Event(event)) {
+    return normalizeV2Event(event);
+  }
+
+  throw Error('Unknown event type');
+}
+
+function isV1Event(event: GatewayEvent): event is APIGatewayProxyEvent {
+  return !('version' in event);
+}
+
+function isV2Event(event: GatewayEvent): event is APIGatewayProxyEventV2 {
+  return 'version' in event && event.version === '2.0';
+}
+
+function normalizeV1Event(event: APIGatewayProxyEvent): HTTPGraphQLRequest {
+  const headers = normalizeHeaders(event.headers);
+  const body = parseBody(event.body, headers.get('content-type'));
+  // Single value parameters can be directly added
+  const searchParams = new URLSearchParams(
+    normalizeQueryStringParams(event.queryStringParameters),
+  );
+  // Passing a key with an array entry to the constructor yields
+  // one value in the querystring with %2C as the array was flattened to a string
+  // Multi values must be appended individually to get the to-spec output
+  for (const [key, values] of Object.entries(event.multiValueQueryStringParameters ?? {})) {
+    for (const value of values ?? []) {
+      searchParams.append(key, value);
     }
   }
 
-  if ((<APIGatewayProxyEventV2>event).requestContext.http !== undefined) {
-    return {
-      method: (<APIGatewayProxyEventV2>event).requestContext.http.method,
-      headers,
-      search: (<APIGatewayProxyEventV2>event).rawQueryString,
-      body: parsedBody,
-    };
-  } else {
-    return {} as HTTPGraphQLRequest;
+  return {
+    method: event.httpMethod,
+    headers,
+    search: searchParams.toString(),
+    body,
+  };
+}
+
+function normalizeV2Event(event: APIGatewayProxyEventV2): HTTPGraphQLRequest {
+  const headers = normalizeHeaders(event.headers);
+  return {
+    method: event.requestContext.http.method,
+    headers,
+    search: event.rawQueryString,
+    body: parseBody(event.body, headers.get('content-type')),
+  };
+}
+
+function parseBody(
+  body: string | null | undefined,
+  contentType: string | undefined,
+): object | string {
+  if (body) {
+    if (contentType === 'application/json') {
+      return JSON.parse(body);
+    }
+    if (contentType === 'text/plain') {
+      return body;
+    }
   }
+  return '';
+}
+
+function normalizeHeaders(
+  headers: APIGatewayProxyEventHeaders,
+): Map<string, string> {
+  const headerMap = new Map<string, string>();
+  for (const [key, value] of Object.entries(headers)) {
+    headerMap.set(key, value ?? '');
+  }
+  return headerMap;
+}
+
+function normalizeQueryStringParams(
+  queryStringParams: APIGatewayProxyEventQueryStringParameters | null,
+): Record<string, string> {
+  const queryStringRecord: Record<string, string> = {};
+  for (const [key, value] of Object.entries(queryStringParams ?? {})) {
+    queryStringRecord[key] = value ?? '';
+  }
+  return queryStringRecord;
 }
