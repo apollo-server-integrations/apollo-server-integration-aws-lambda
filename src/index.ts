@@ -95,7 +95,7 @@ function normalizeGatewayEvent(event: GatewayEvent): HTTPGraphQLRequest {
   if (isV1Event(event)) {
     return normalizeV1Event(event);
   }
-  
+
   if (isV2Event(event)) {
     return normalizeV2Event(event);
   }
@@ -121,7 +121,9 @@ function normalizeV1Event(event: APIGatewayProxyEvent): HTTPGraphQLRequest {
   // Passing a key with an array entry to the constructor yields
   // one value in the querystring with %2C as the array was flattened to a string
   // Multi values must be appended individually to get the to-spec output
-  for (const [key, values] of Object.entries(event.multiValueQueryStringParameters ?? {})) {
+  for (const [key, values] of Object.entries(
+    event.multiValueQueryStringParameters ?? {},
+  )) {
     for (const value of values ?? []) {
       searchParams.append(key, value);
     }
