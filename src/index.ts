@@ -32,15 +32,15 @@ type LambdaHandler = Handler<
   APIGatewayProxyStructuredResultV2 | APIGatewayProxyResult
 >;
 
-export function lambdaHandler(
+export function startServerAndCreateLambdaHandler(
   server: ApolloServer<BaseContext>,
   options?: LambdaHandlerOptions<BaseContext>,
 ): LambdaHandler;
-export function lambdaHandler<TContext extends BaseContext>(
+export function startServerAndCreateLambdaHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
   options: WithRequired<LambdaHandlerOptions<TContext>, 'context'>,
 ): LambdaHandler;
-export function lambdaHandler<TContext extends BaseContext>(
+export function startServerAndCreateLambdaHandler<TContext extends BaseContext>(
   server: ApolloServer<TContext>,
   options?: LambdaHandlerOptions<TContext>,
 ): LambdaHandler {

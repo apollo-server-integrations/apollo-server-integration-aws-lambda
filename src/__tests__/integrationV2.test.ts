@@ -4,7 +4,7 @@ import {
   defineIntegrationTestSuite,
 } from '@apollo/server-integration-testsuite';
 import { createServer } from 'http';
-import { lambdaHandler } from '..';
+import { startServerAndCreateLambdaHandler } from '..';
 import { createMockV2Server } from './mockAPIGatewayV2Server';
 import { urlForHttpServer } from './mockServer';
 
@@ -20,8 +20,8 @@ describe('lambdaHandlerV2', () => {
       });
 
       const handler = testOptions
-        ? lambdaHandler(server, testOptions)
-        : lambdaHandler(server);
+        ? startServerAndCreateLambdaHandler(server, testOptions)
+        : startServerAndCreateLambdaHandler(server);
 
       httpServer.addListener('request', createMockV2Server(handler));
 
