@@ -6,11 +6,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/michael-watson/apollo-server-integration-aws-lambda"
+    "url": "https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda"
   },
-  "homepage": "https://github.com/michael-watson/apollo-server-integration-aws-lambda#readme",
+  "homepage": "https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda#readme",
   "bugs": {
-    "url": "https://github.com/michael-watson/apollo-server-integration-aws-lambda/issues"
+    "url": "https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/issues"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
