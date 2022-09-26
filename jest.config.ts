@@ -4,14 +4,10 @@ const config: Config.InitialOptions = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: ['src'],
-  transform: {
-    '^.+\\.test.ts$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.test.json',
-        diagnostics: true,
-      },
-    ],
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.test.json',
+    },
   },
   testRegex: '/__tests__/.*.test.ts$',
   verbose: true,

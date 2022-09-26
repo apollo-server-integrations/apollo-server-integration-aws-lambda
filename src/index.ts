@@ -63,24 +63,24 @@ export function startServerAndCreateLambdaHandler<TContext extends BaseContext>(
     try {
       const normalizedEvent = normalizeGatewayEvent(event);
 
-      const { body, headers, status } = await server.executeHTTPGraphQLRequest({
+      const httpGraphQLResponse = await server.executeHTTPGraphQLRequest({
         httpGraphQLRequest: normalizedEvent,
         context: () => contextFunction({ event, context }),
       });
 
-      if (body.kind === "chunked") {
+      if (httpGraphQLResponse.completeBody === null) {
         throw Error('Incremental delivery not implemented');
       }
 
       return {
-        statusCode: status || 200,
+        statusCode: httpGraphQLResponse.status || 200,
         headers: {
-          ...Object.fromEntries(headers.entries()),
+          ...Object.fromEntries(httpGraphQLResponse.headers),
           'content-length': Buffer.byteLength(
-            body.string,
+            httpGraphQLResponse.completeBody,
           ).toString(),
         },
-        body: body.string,
+        body: httpGraphQLResponse.completeBody,
       };
     } catch (e) {
       return {
