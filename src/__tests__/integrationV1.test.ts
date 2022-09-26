@@ -42,6 +42,7 @@ describe('lambdaHandlerV1', () => {
     },
     {
       serverIsStartedInBackground: true,
+      noIncrementalDelivery: true,
     },
   );
 });
