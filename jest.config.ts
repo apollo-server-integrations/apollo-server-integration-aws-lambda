@@ -11,6 +11,7 @@ const config: Config.InitialOptions = {
   },
   testRegex: '/__tests__/.*.test.ts$',
   verbose: true,
+  snapshotFormat: { escapeString: false, printBasicPrototype: false },
 };
 
 export default config;
