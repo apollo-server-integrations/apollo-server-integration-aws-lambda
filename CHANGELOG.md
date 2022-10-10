@@ -1,5 +1,11 @@
 # @as-integrations/aws-lambda
 
+## 1.0.0
+
+### Major Changes
+
+- [#27](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/27) [`2ec397f`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/2ec397f0c9cc49e18d741bb2cc8feae7a7030e0b) Thanks [@trevor-scheer](https://github.com/trevor-scheer)! - Official support for Apollo Server v4.0.0
+
 ## 0.1.1
 
 ### Patch Changes
