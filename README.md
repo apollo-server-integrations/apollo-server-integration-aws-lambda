@@ -2,7 +2,7 @@
 
 ## Getting started: Lambda middleware
 
-Apollo Server runs as a part of your Lambda handler, processing GraphQL requests. This package allows you to easily integrate Apollo Server with AWS Lambda.
+Apollo Server runs as a part of your Lambda handler, processing GraphQL requests. This package allows you to easily integrate Apollo Server with AWS Lambda. This integration is compatible with Lambda's API Gateway V1 (REST) and V2 (HTTP). It doesn't currently claim support for any other flavors of Lambda, though PRs are welcome!
 
 First, install Apollo Server, graphql-js, and the Lambda handler package:
 
