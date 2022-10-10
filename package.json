@@ -32,10 +32,10 @@
     "watch": "tsc --build --watch"
   },
   "dependencies": {
-    "@types/aws-lambda": "latest"
+    "@types/aws-lambda": "^8.10.106"
   },
   "devDependencies": {
-    "@apollo/server-integration-testsuite": "4.0.0-alpha.13",
+    "@apollo/server-integration-testsuite": "4.0.0",
     "@apollo/utils.withrequired": "1.0.0",
     "@changesets/changelog-github": "0.4.7",
     "@changesets/cli": "2.25.0",
@@ -50,7 +50,7 @@
     "typescript": "4.8.4"
   },
   "peerDependencies": {
-    "@apollo/server": "^4.0.0-alpha.13"
+    "@apollo/server": "^4.0.0"
   },
   "volta": {
     "node": "16.17.1",
