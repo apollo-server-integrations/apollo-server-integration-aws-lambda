@@ -111,7 +111,10 @@ function isV2Event(event: GatewayEvent): event is APIGatewayProxyEventV2 {
 
 function normalizeV1Event(event: APIGatewayProxyEvent): HTTPGraphQLRequest {
   const headers = normalizeHeaders(event.headers);
-  const body = parseBody(event.body, headers.get('content-type'));
+  const body = parseBody(
+    event.body,
+    headers.get('content-type') ?? headers.get('Content-Type'),
+  );
   // Single value parameters can be directly added
   const searchParams = new URLSearchParams(
     normalizeQueryStringParams(event.queryStringParameters),
@@ -141,7 +144,10 @@ function normalizeV2Event(event: APIGatewayProxyEventV2): HTTPGraphQLRequest {
     method: event.requestContext.http.method,
     headers,
     search: event.rawQueryString,
-    body: parseBody(event.body, headers.get('content-type')),
+    body: parseBody(
+      event.body,
+      headers.get('content-type') ?? headers.get('Content-Type'),
+    ),
   };
 }
 
