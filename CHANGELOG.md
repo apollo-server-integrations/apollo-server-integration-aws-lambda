@@ -1,5 +1,13 @@
 # @as-integrations/aws-lambda
 
+## 1.0.1
+
+### Patch Changes
+
+- [#32](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/32) [`accacb2`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/accacb2fe2ce754ae607ca167365735f3f8a8eda) Thanks [@christiangaetano](https://github.com/christiangaetano)! - Downcase all header keys during normalization
+
+- [#30](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/30) [`39efda1`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/39efda16058a2664438f8113ebf9a13c5aa9df68) Thanks [@christiangaetano](https://github.com/christiangaetano)! - Correctly recognize gateway v1 events
+
 ## 1.0.0
 
 ### Major Changes
