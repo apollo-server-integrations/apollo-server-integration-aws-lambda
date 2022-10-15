@@ -169,7 +169,7 @@ function normalizeHeaders(
 ): Map<string, string> {
   const headerMap = new Map<string, string>();
   for (const [key, value] of Object.entries(headers)) {
-    headerMap.set(key, value ?? '');
+    headerMap.set(key.toLocaleLowerCase(), value ?? '');
   }
   return headerMap;
 }
