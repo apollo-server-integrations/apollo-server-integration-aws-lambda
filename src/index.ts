@@ -102,7 +102,11 @@ function normalizeGatewayEvent(event: GatewayEvent): HTTPGraphQLRequest {
 }
 
 function isV1Event(event: GatewayEvent): event is APIGatewayProxyEvent {
-  return !('version' in event);
+  // APIGatewayProxyEvent incorrectly omits `version` even though API Gateway v1
+  // events may include `version: "1.0"`
+  return (
+    !('version' in event) || ('version' in event && event.version === '1.0')
+  );
 }
 
 function isV2Event(event: GatewayEvent): event is APIGatewayProxyEventV2 {

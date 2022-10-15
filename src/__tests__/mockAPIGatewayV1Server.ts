@@ -30,6 +30,8 @@ function v1EventFromRequest(
 
   // simplify the V1 event down to what our integration actually cares about
   const event: Partial<APIGatewayProxyEvent> = {
+    // @ts-expect-error (version actually can exist on v1 events, this seems to be a typing error)
+    version: "1.0",
     httpMethod: req.method!,
     headers: Object.fromEntries(
       Object.entries(req.headers).map(([name, value]) => {
