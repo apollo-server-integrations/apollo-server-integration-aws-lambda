@@ -4,6 +4,7 @@ import type {
   ContextFunction,
   HTTPGraphQLRequest,
 } from '@apollo/server';
+import { HeaderMap } from '@apollo/server';
 import type { WithRequired } from '@apollo/utils.withrequired';
 import type {
   APIGatewayProxyEvent,
@@ -164,12 +165,10 @@ function parseBody(
   return '';
 }
 
-function normalizeHeaders(
-  headers: APIGatewayProxyEventHeaders,
-): Map<string, string> {
-  const headerMap = new Map<string, string>();
+function normalizeHeaders(headers: APIGatewayProxyEventHeaders): HeaderMap {
+  const headerMap = new HeaderMap();
   for (const [key, value] of Object.entries(headers)) {
-    headerMap.set(key.toLocaleLowerCase(), value ?? '');
+    headerMap.set(key, value ?? '');
   }
   return headerMap;
 }
