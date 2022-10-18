@@ -35,8 +35,8 @@
     "@types/aws-lambda": "^8.10.106"
   },
   "devDependencies": {
-    "@apollo/server-integration-testsuite": "4.0.0",
-    "@apollo/utils.withrequired": "1.0.0",
+    "@apollo/server-integration-testsuite": "4.0.1",
+    "@apollo/utils.withrequired": "1.0.1",
     "@changesets/changelog-github": "0.4.7",
     "@changesets/cli": "2.25.0",
     "@types/jest": "29.1.2",
