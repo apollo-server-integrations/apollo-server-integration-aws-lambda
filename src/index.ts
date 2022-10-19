@@ -31,7 +31,7 @@ export interface LambdaHandlerOptions<TContext extends BaseContext> {
   context?: ContextFunction<[LambdaContextFunctionArgument], TContext>;
 }
 
-type LambdaHandlerResult = (
+export type HandlerResult = (
   | APIGatewayProxyStructuredResultV2
   | APIGatewayProxyResult
   | ALBResult
@@ -39,7 +39,7 @@ type LambdaHandlerResult = (
   statusCode: number;
 };
 
-type LambdaHandler = Handler<IncomingEvent, LambdaHandlerResult>;
+type LambdaHandler = Handler<IncomingEvent, HandlerResult>;
 
 export function startServerAndCreateLambdaHandler(
   server: ApolloServer<BaseContext>,
