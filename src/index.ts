@@ -22,6 +22,8 @@ export type IncomingEvent =
   | APIGatewayProxyEventV2
   | ALBEvent;
 
+export type GatewayEvent = IncomingEvent;
+
 export interface LambdaContextFunctionArgument {
   event: IncomingEvent;
   context: Context;
