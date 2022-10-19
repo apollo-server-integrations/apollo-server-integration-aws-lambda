@@ -8,9 +8,9 @@ import type {
 } from 'aws-lambda';
 import { format } from 'url';
 import type { AddressInfo } from 'net';
-import type { GatewayEvent } from '..';
+import type { IncomingEvent } from '..';
 
-type LambdaHandler<T = GatewayEvent> = Handler<
+type LambdaHandler<T = IncomingEvent> = Handler<
   T,
   T extends APIGatewayProxyEvent
     ? APIGatewayProxyResult
@@ -18,7 +18,7 @@ type LambdaHandler<T = GatewayEvent> = Handler<
 >;
 
 // Returns a Node http handler that invokes a Lambda handler (v1 / v2)
-export function createMockServer<T extends GatewayEvent>(
+export function createMockServer<T extends IncomingEvent>(
   handler: LambdaHandler<T>,
   eventFromRequest: (req: IncomingMessage, body: string) => T,
 ) {
