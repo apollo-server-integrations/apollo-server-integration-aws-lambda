@@ -22,6 +22,11 @@ export type IncomingEvent =
   | APIGatewayProxyEventV2
   | ALBEvent;
 
+/**
+ * @deprecated Use {IncomingEvent} instead
+ */
+export type GatewayEvent = IncomingEvent;
+
 export interface LambdaContextFunctionArgument {
   event: IncomingEvent;
   context: Context;
@@ -70,7 +75,7 @@ export function startServerAndCreateLambdaHandler<TContext extends BaseContext>(
 
   return async function (event, context) {
     try {
-      const normalizedEvent = normalizeGatewayEvent(event);
+      const normalizedEvent = normalizeIncomingEvent(event);
 
       const { body, headers, status } = await server.executeHTTPGraphQLRequest({
         httpGraphQLRequest: normalizedEvent,
@@ -98,7 +103,7 @@ export function startServerAndCreateLambdaHandler<TContext extends BaseContext>(
   };
 }
 
-function normalizeGatewayEvent(event: IncomingEvent): HTTPGraphQLRequest {
+function normalizeIncomingEvent(event: IncomingEvent): HTTPGraphQLRequest {
   let httpMethod: string;
   if ('httpMethod' in event) {
     httpMethod = event.httpMethod;
@@ -110,7 +115,6 @@ function normalizeGatewayEvent(event: IncomingEvent): HTTPGraphQLRequest {
   if ('rawQueryString' in event) {
     search = event.rawQueryString;
   } else if ('queryStringParameters' in event) {
-    event.queryStringParameters;
     search = normalizeQueryStringParams(
       event.queryStringParameters,
       event.multiValueQueryStringParameters,
