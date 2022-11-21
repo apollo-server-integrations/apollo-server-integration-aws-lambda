@@ -1,6 +1,8 @@
 import type { IncomingMessage, Server, ServerResponse } from 'http';
 import type {
+  ALBResult,
   APIGatewayProxyEvent,
+  APIGatewayProxyEventV2,
   APIGatewayProxyResult,
   APIGatewayProxyStructuredResultV2,
   Context as LambdaContext,
@@ -14,7 +16,9 @@ type LambdaHandler<T = IncomingEvent> = Handler<
   T,
   T extends APIGatewayProxyEvent
     ? APIGatewayProxyResult
-    : APIGatewayProxyStructuredResultV2
+    : T extends APIGatewayProxyEventV2
+    ? APIGatewayProxyStructuredResultV2
+    : ALBResult
 >;
 
 // Returns a Node http handler that invokes a Lambda handler (v1 / v2)
