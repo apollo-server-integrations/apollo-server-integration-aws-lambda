@@ -3,6 +3,7 @@ import {
   CreateServerForIntegrationTestsOptions,
   defineIntegrationTestSuite,
 } from '@apollo/server-integration-testsuite';
+import type { ALBEvent, ALBResult, Handler } from 'aws-lambda';
 import { createServer } from 'http';
 import { startServerAndCreateLambdaHandler } from '..';
 import { createMockALBServer } from './mockALBServer';
@@ -23,7 +24,10 @@ describe('lambdaHandlerALB', () => {
         ? startServerAndCreateLambdaHandler(server, testOptions)
         : startServerAndCreateLambdaHandler(server);
 
-      httpServer.addListener('request', createMockALBServer(handler));
+      httpServer.addListener(
+        'request',
+        createMockALBServer(handler as Handler<ALBEvent, ALBResult>),
+      );
 
       await new Promise<void>((resolve) => {
         httpServer.listen({ port: 0 }, resolve);

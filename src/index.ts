@@ -36,13 +36,10 @@ export interface LambdaHandlerOptions<TContext extends BaseContext> {
   context?: ContextFunction<[LambdaContextFunctionArgument], TContext>;
 }
 
-export type HandlerResult = (
+export type HandlerResult =
   | APIGatewayProxyStructuredResultV2
   | APIGatewayProxyResult
-  | ALBResult
-) & {
-  statusCode: number;
-};
+  | ALBResult;
 
 type LambdaHandler = Handler<IncomingEvent, HandlerResult>;
 
