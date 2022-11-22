@@ -1,6 +1,8 @@
 import type { IncomingMessage, Server, ServerResponse } from 'http';
 import type {
+  ALBResult,
   APIGatewayProxyEvent,
+  APIGatewayProxyEventV2,
   APIGatewayProxyResult,
   APIGatewayProxyStructuredResultV2,
   Context as LambdaContext,
@@ -8,17 +10,19 @@ import type {
 } from 'aws-lambda';
 import { format } from 'url';
 import type { AddressInfo } from 'net';
-import type { GatewayEvent } from '..';
+import type { IncomingEvent } from '..';
 
-type LambdaHandler<T = GatewayEvent> = Handler<
+type LambdaHandler<T = IncomingEvent> = Handler<
   T,
   T extends APIGatewayProxyEvent
     ? APIGatewayProxyResult
-    : APIGatewayProxyStructuredResultV2
+    : T extends APIGatewayProxyEventV2
+    ? APIGatewayProxyStructuredResultV2
+    : ALBResult
 >;
 
 // Returns a Node http handler that invokes a Lambda handler (v1 / v2)
-export function createMockServer<T extends GatewayEvent>(
+export function createMockServer<T extends IncomingEvent>(
   handler: LambdaHandler<T>,
   eventFromRequest: (req: IncomingMessage, body: string) => T,
 ) {
