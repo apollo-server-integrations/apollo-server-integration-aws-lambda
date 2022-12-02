@@ -135,10 +135,10 @@ function parseBody(
   contentType: string | undefined,
 ): object | string {
   if (body) {
-    if (contentType === 'application/json') {
+    if (contentType?.startsWith('application/json')) {
       return JSON.parse(body);
     }
-    if (contentType === 'text/plain') {
+    if (contentType?.startsWith('text/plain')) {
       return body;
     }
   }
