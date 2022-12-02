@@ -35,16 +35,16 @@
     "@types/aws-lambda": "^8.10.106"
   },
   "devDependencies": {
-    "@apollo/server-integration-testsuite": "4.1.1",
+    "@apollo/server-integration-testsuite": "4.2.2",
     "@apollo/utils.withrequired": "2.0.0",
     "@changesets/changelog-github": "0.4.7",
     "@changesets/cli": "2.25.2",
     "@types/jest": "29.2.3",
-    "@types/node": "14.18.33",
-    "cspell": "6.14.3",
+    "@types/node": "14.18.34",
+    "cspell": "6.16.0",
     "jest": "29.3.1",
     "jest-junit": "15.0.0",
-    "prettier": "2.7.1",
+    "prettier": "2.8.0",
     "ts-jest": "29.0.3",
     "ts-node": "10.9.1",
     "typescript": "4.9.3"
@@ -54,6 +54,6 @@
   },
   "volta": {
     "node": "18.12.1",
-    "npm": "9.1.2"
+    "npm": "9.1.3"
   }
 }
