@@ -1,5 +1,15 @@
 # @as-integrations/aws-lambda
 
+## 1.1.0
+
+### Minor Changes
+
+- [#40](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/40) [`74666b4`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/74666b46be3ba8a3d83b16eb180844405aedf372) Thanks [@BlenderDude](https://github.com/BlenderDude)! - ALB Event type integration
+
+### Patch Changes
+
+- [#35](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/35) [`636326b`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/636326b80a6c92903f460b52e7fb25f00e6b28bd) Thanks [@BlenderDude](https://github.com/BlenderDude)! - Updated headers to HeaderMap implementation for case normalization
+
 ## 1.0.1
 
 ### Patch Changes
