@@ -1,5 +1,11 @@
 # @as-integrations/aws-lambda
 
+## 1.1.1
+
+### Patch Changes
+
+- [#57](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/57) [`6da4f62`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/6da4f62d19511b9d904679799465570bbcc65437) Thanks [@renovate](https://github.com/apps/renovate)! - Fixed content-type parsing to ignore charset definition
+
 ## 1.1.0
 
 ### Minor Changes
