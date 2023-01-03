@@ -126,20 +126,22 @@ function normalizeIncomingEvent(event: IncomingEvent): HTTPGraphQLRequest {
     method: httpMethod,
     headers,
     search,
-    body: parseBody(body, headers.get('content-type')),
+    body: parseBody(body, headers.get('content-type'), event.isBase64Encoded),
   };
 }
 
 function parseBody(
   body: string | null | undefined,
   contentType: string | undefined,
+  isBase64: boolean,
 ): object | string {
   if (body) {
+    const parsedBody = isBase64 ? Buffer.from(body, 'base64').toString('utf8') : body;
     if (contentType?.startsWith('application/json')) {
-      return JSON.parse(body);
+      return JSON.parse(parsedBody);
     }
     if (contentType?.startsWith('text/plain')) {
-      return body;
+      return parsedBody;
     }
   }
   return '';
