@@ -2,178 +2,114 @@ import type {
   ApolloServer,
   BaseContext,
   ContextFunction,
-  HTTPGraphQLRequest,
 } from '@apollo/server';
-import { HeaderMap } from '@apollo/server';
 import type { WithRequired } from '@apollo/utils.withrequired';
-import type {
-  ALBEvent,
-  ALBResult,
-  APIGatewayProxyEvent,
-  APIGatewayProxyEventV2,
-  APIGatewayProxyResult,
-  APIGatewayProxyStructuredResultV2,
-  Context,
-  Handler,
-} from 'aws-lambda';
+import type { Context, Handler } from 'aws-lambda';
+import type { MiddlewareFn } from './middleware';
+import type { RequestHandler } from './requestHandler';
 
-export type IncomingEvent =
-  | APIGatewayProxyEvent
-  | APIGatewayProxyEventV2
-  | ALBEvent;
-
-/**
- * @deprecated Use {IncomingEvent} instead
- */
-export type GatewayEvent = IncomingEvent;
-
-export interface LambdaContextFunctionArgument {
-  event: IncomingEvent;
+export interface LambdaContextFunctionArgument<
+  RH extends RequestHandler<any, any>,
+> {
+  event: RH extends RequestHandler<infer EventType, any> ? EventType : never;
   context: Context;
 }
 
-export interface LambdaHandlerOptions<TContext extends BaseContext> {
-  context?: ContextFunction<[LambdaContextFunctionArgument], TContext>;
+export interface LambdaHandlerOptions<
+  RH extends RequestHandler<any, any>,
+  TContext extends BaseContext,
+> {
+  middleware?: Array<MiddlewareFn<RH>>;
+  context?: ContextFunction<[LambdaContextFunctionArgument<RH>], TContext>;
 }
 
-export type HandlerResult =
-  | APIGatewayProxyStructuredResultV2
-  | APIGatewayProxyResult
-  | ALBResult;
+export type LambdaHandler<RH extends RequestHandler<any, any>> =
+  RH extends RequestHandler<infer EventType, infer ResultType>
+    ? Handler<EventType, ResultType>
+    : never;
 
-type LambdaHandler = Handler<IncomingEvent, HandlerResult>;
-
-export function startServerAndCreateLambdaHandler(
+export function startServerAndCreateLambdaHandler<
+  RH extends RequestHandler<any, any>,
+>(
   server: ApolloServer<BaseContext>,
-  options?: LambdaHandlerOptions<BaseContext>,
-): LambdaHandler;
-export function startServerAndCreateLambdaHandler<TContext extends BaseContext>(
+  handler: RH,
+  options?: LambdaHandlerOptions<
+    RH extends RequestHandler<infer EventType, any> ? EventType : never,
+    BaseContext
+  >,
+): LambdaHandler<RH>;
+export function startServerAndCreateLambdaHandler<
+  RH extends RequestHandler<any, any>,
+  TContext extends BaseContext,
+>(
   server: ApolloServer<TContext>,
-  options: WithRequired<LambdaHandlerOptions<TContext>, 'context'>,
-): LambdaHandler;
-export function startServerAndCreateLambdaHandler<TContext extends BaseContext>(
+  handler: RH,
+  options: WithRequired<
+    LambdaHandlerOptions<
+      RH extends RequestHandler<infer EventType, any> ? EventType : never,
+      TContext
+    >,
+    'context'
+  >,
+): LambdaHandler<RH>;
+export function startServerAndCreateLambdaHandler<
+  RH extends RequestHandler<any, any>,
+  TContext extends BaseContext,
+>(
   server: ApolloServer<TContext>,
-  options?: LambdaHandlerOptions<TContext>,
-): LambdaHandler {
+  handler: RH,
+  options?: LambdaHandlerOptions<
+    RH extends RequestHandler<infer EventType, any> ? EventType : never,
+    TContext
+  >,
+): LambdaHandler<RH> {
   server.startInBackgroundHandlingStartupErrorsByLoggingAndFailingAllRequests();
 
   // This `any` is safe because the overload above shows that context can
   // only be left out if you're using BaseContext as your context, and {} is a
   // valid BaseContext.
   const defaultContext: ContextFunction<
-    [LambdaContextFunctionArgument],
+    [LambdaContextFunctionArgument<RH>],
     any
   > = async () => ({});
 
   const contextFunction: ContextFunction<
-    [LambdaContextFunctionArgument],
+    [LambdaContextFunctionArgument<RH>],
     TContext
   > = options?.context ?? defaultContext;
 
-  return async function (event, context) {
+  return async function (event: any, context: any) {
+    const resultMiddlewareFns: Array<(result: any) => any> = [];
     try {
-      const normalizedEvent = normalizeIncomingEvent(event);
+      const httpGraphQLRequest = handler.fromEvent(event);
 
-      const { body, headers, status } = await server.executeHTTPGraphQLRequest({
-        httpGraphQLRequest: normalizedEvent,
+      for (const middlewareFn of options?.middleware ?? []) {
+        const resultCallback = await middlewareFn(httpGraphQLRequest);
+        if (resultCallback) {
+          resultMiddlewareFns.push(resultCallback);
+        }
+      }
+
+      const response = await server.executeHTTPGraphQLRequest({
+        httpGraphQLRequest,
         context: () => contextFunction({ event, context }),
       });
 
-      if (body.kind === 'chunked') {
-        throw Error('Incremental delivery not implemented');
+      const result = handler.toSuccessResult(response);
+
+      for (const resultMiddlewareFn of resultMiddlewareFns) {
+        resultMiddlewareFn(result);
       }
 
-      return {
-        statusCode: status || 200,
-        headers: {
-          ...Object.fromEntries(headers),
-          'content-length': Buffer.byteLength(body.string).toString(),
-        },
-        body: body.string,
-      };
+      return result;
     } catch (e) {
-      return {
-        statusCode: 400,
-        body: (e as Error).message,
-      };
+      const result = handler.toErrorResult(e);
+
+      for (const resultMiddlewareFn of resultMiddlewareFns) {
+        resultMiddlewareFn(result);
+      }
+
+      return result;
     }
-  };
-}
-
-function normalizeIncomingEvent(event: IncomingEvent): HTTPGraphQLRequest {
-  let httpMethod: string;
-  if ('httpMethod' in event) {
-    httpMethod = event.httpMethod;
-  } else {
-    httpMethod = event.requestContext.http.method;
-  }
-  const headers = normalizeHeaders(event.headers);
-  let search: string;
-  if ('rawQueryString' in event) {
-    search = event.rawQueryString;
-  } else if ('queryStringParameters' in event) {
-    search = normalizeQueryStringParams(
-      event.queryStringParameters,
-      event.multiValueQueryStringParameters,
-    ).toString();
-  } else {
-    throw new Error('Search params not parsable from event');
-  }
-
-  const body = event.body ?? '';
-
-  return {
-    method: httpMethod,
-    headers,
-    search,
-    body: parseBody(body, headers.get('content-type'), event.isBase64Encoded),
-  };
-}
-
-function parseBody(
-  body: string | null | undefined,
-  contentType: string | undefined,
-  isBase64: boolean,
-): object | string {
-  if (body) {
-    const parsedBody = isBase64
-      ? Buffer.from(body, 'base64').toString('utf8')
-      : body;
-    if (contentType?.startsWith('application/json')) {
-      return JSON.parse(parsedBody);
-    }
-    if (contentType?.startsWith('text/plain')) {
-      return parsedBody;
-    }
-  }
-  return '';
-}
-
-function normalizeHeaders(headers: IncomingEvent['headers']): HeaderMap {
-  const headerMap = new HeaderMap();
-  for (const [key, value] of Object.entries(headers ?? {})) {
-    headerMap.set(key, value ?? '');
-  }
-  return headerMap;
-}
-
-function normalizeQueryStringParams(
-  queryStringParams: Record<string, string | undefined> | null | undefined,
-  multiValueQueryStringParameters:
-    | Record<string, string[] | undefined>
-    | null
-    | undefined,
-): URLSearchParams {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(queryStringParams ?? {})) {
-    params.append(key, value ?? '');
-  }
-  for (const [key, value] of Object.entries(
-    multiValueQueryStringParameters ?? {},
-  )) {
-    for (const v of value ?? []) {
-      params.append(key, v);
-    }
-  }
-  return params;
+  } as unknown as LambdaHandler<RH>;
 }
