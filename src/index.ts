@@ -136,7 +136,9 @@ function parseBody(
   isBase64: boolean,
 ): object | string {
   if (body) {
-    const parsedBody = isBase64 ? Buffer.from(body, 'base64').toString('utf8') : body;
+    const parsedBody = isBase64
+      ? Buffer.from(body, 'base64').toString('utf8')
+      : body;
     if (contentType?.startsWith('application/json')) {
       return JSON.parse(parsedBody);
     }

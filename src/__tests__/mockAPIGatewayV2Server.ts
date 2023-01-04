@@ -14,13 +14,10 @@ export function createMockV2Server(
   return createMockServer(handler, v2EventFromRequest(shouldBase64Encode));
 }
 
-function v2EventFromRequest(shouldBase64Encode: boolean){
-  return function (
-    req: IncomingMessage,
-    body: string,
-  ): APIGatewayProxyEventV2 {
+function v2EventFromRequest(shouldBase64Encode: boolean) {
+  return function (req: IncomingMessage, body: string): APIGatewayProxyEventV2 {
     const urlObject = url.parse(req.url || '', false);
-  
+
     // simplify the V2 event down to what our integration actually cares about,
     // but keep it defined in terms of the original type so we know the fields
     // we _are_ populating are correct.
@@ -33,10 +30,12 @@ function v2EventFromRequest(shouldBase64Encode: boolean){
         >;
       }
     >;
-  
+
     const event: TestEventType = {
       version: '2.0',
-      body: shouldBase64Encode ? Buffer.from(body, 'utf8').toString('base64') : body,
+      body: shouldBase64Encode
+        ? Buffer.from(body, 'utf8').toString('base64')
+        : body,
       rawQueryString: urlObject.search?.replace(/^\?/, '') ?? '',
       headers: Object.fromEntries(
         Object.entries(req.headers).map(([name, value]) => {
@@ -56,6 +55,5 @@ function v2EventFromRequest(shouldBase64Encode: boolean){
       isBase64Encoded: shouldBase64Encode,
     };
     return event as APIGatewayProxyEventV2;
-  }
-  
+  };
 }
