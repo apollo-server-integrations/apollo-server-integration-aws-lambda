@@ -14,40 +14,51 @@ export function defineLambdaTestSuite<Event, Response>(
     shouldBase64Encode: boolean,
   ) => (req: IncomingMessage, res: ServerResponse) => void,
 ) {
-  for (const shouldBase64Encode of [true, false]) {
-    describe(`With base64 encoding ${
-      shouldBase64Encode ? 'enabled' : 'disabled'
-    }`, () => {
-      defineIntegrationTestSuite(async function (
-        serverOptions: ApolloServerOptions<BaseContext>,
-        testOptions?: CreateServerForIntegrationTestsOptions,
-      ) {
-        const httpServer = createServer();
-        const server = new ApolloServer({
-          ...serverOptions,
-        });
+  describe.each([true, false])(
+    'With base64 encoding set to %s',
+    (shouldBase64Encode) => {
+      defineIntegrationTestSuite(
+        async function (
+          serverOptions: ApolloServerOptions<BaseContext>,
+          testOptions?: CreateServerForIntegrationTestsOptions,
+        ) {
+          const httpServer = createServer();
+          const server = new ApolloServer({
+            ...serverOptions,
+          });
 
-        const handler = startServerAndCreateLambdaHandler(server, testOptions);
+          const handler = startServerAndCreateLambdaHandler(
+            server,
+            testOptions,
+          );
 
-        httpServer.addListener('request', mockServerFactory(handler as Handler<Event, Response>, shouldBase64Encode));
+          httpServer.addListener(
+            'request',
+            mockServerFactory(
+              handler as Handler<Event, Response>,
+              shouldBase64Encode,
+            ),
+          );
 
-        await new Promise<void>((resolve) => {
-          httpServer.listen({ port: 0 }, resolve);
-        });
-  
-        return {
-          server,
-          url: urlForHttpServer(httpServer),
-          async extraCleanup() {
-            await new Promise<void>((resolve) => {
-              httpServer.close(() => resolve());
-            });
-          },
-        };
-      }, {
-        serverIsStartedInBackground: true,
-        noIncrementalDelivery: true,
-      });
-    });
-  }
+          await new Promise<void>((resolve) => {
+            httpServer.listen({ port: 0 }, resolve);
+          });
+
+          return {
+            server,
+            url: urlForHttpServer(httpServer),
+            async extraCleanup() {
+              await new Promise<void>((resolve) => {
+                httpServer.close(() => resolve());
+              });
+            },
+          };
+        },
+        {
+          serverIsStartedInBackground: true,
+          noIncrementalDelivery: true,
+        },
+      );
+    },
+  );
 }
