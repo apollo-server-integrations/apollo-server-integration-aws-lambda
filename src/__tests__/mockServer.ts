@@ -1,30 +1,16 @@
 import type { IncomingMessage, Server, ServerResponse } from 'http';
-import type {
-  ALBResult,
-  APIGatewayProxyEvent,
-  APIGatewayProxyEventV2,
-  APIGatewayProxyResult,
-  APIGatewayProxyStructuredResultV2,
-  Context as LambdaContext,
-  Handler,
-} from 'aws-lambda';
+import type { Context as LambdaContext, Handler } from 'aws-lambda';
 import { format } from 'url';
 import type { AddressInfo } from 'net';
-import type { IncomingEvent } from '..';
-
-type LambdaHandler<T = IncomingEvent> = Handler<
-  T,
-  T extends APIGatewayProxyEvent
-    ? APIGatewayProxyResult
-    : T extends APIGatewayProxyEventV2
-    ? APIGatewayProxyStructuredResultV2
-    : ALBResult
->;
+import type { RequestHandler } from '../requestHandler';
 
 // Returns a Node http handler that invokes a Lambda handler (v1 / v2)
-export function createMockServer<T extends IncomingEvent>(
-  handler: LambdaHandler<T>,
-  eventFromRequest: (req: IncomingMessage, body: string) => T,
+export function createMockServer<RH extends RequestHandler<any, any>>(
+  handler: Handler<any, any>,
+  eventFromRequest: (
+    req: IncomingMessage,
+    body: string,
+  ) => RH extends RequestHandler<infer EventType, any> ? EventType : never,
 ) {
   return (req: IncomingMessage, res: ServerResponse) => {
     let body = '';
@@ -42,7 +28,7 @@ export function createMockServer<T extends IncomingEvent>(
       )!;
       res.statusCode = result.statusCode!;
       Object.entries(result.headers ?? {}).forEach(([key, value]) => {
-        res.setHeader(key, value.toString());
+        res.setHeader(key, (value as string).toString());
       });
       res.write(result.body);
       res.end();

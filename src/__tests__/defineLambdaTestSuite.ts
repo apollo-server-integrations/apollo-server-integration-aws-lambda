@@ -3,14 +3,19 @@ import {
   CreateServerForIntegrationTestsOptions,
   defineIntegrationTestSuite,
 } from '@apollo/server-integration-testsuite';
-import type { Handler } from 'aws-lambda';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { startServerAndCreateLambdaHandler } from '..';
+import type { RequestHandler } from '../requestHandler';
+import { LambdaHandler, startServerAndCreateLambdaHandler } from '..';
 import { urlForHttpServer } from './mockServer';
+import type { MiddlewareFn } from '../middleware';
 
-export function defineLambdaTestSuite<Event, Response>(
+export function defineLambdaTestSuite<RH extends RequestHandler<any, any>>(
+  options: {
+    requestHandler: RH;
+    middleware?: Array<MiddlewareFn<RH>>;
+  },
   mockServerFactory: (
-    handler: Handler<Event, Response>,
+    handler: LambdaHandler<RH>,
     shouldBase64Encode: boolean,
   ) => (req: IncomingMessage, res: ServerResponse) => void,
 ) {
@@ -29,15 +34,16 @@ export function defineLambdaTestSuite<Event, Response>(
 
           const handler = startServerAndCreateLambdaHandler(
             server,
-            testOptions,
+            options.requestHandler,
+            {
+              ...testOptions,
+              middleware: options.middleware,
+            },
           );
 
           httpServer.addListener(
             'request',
-            mockServerFactory(
-              handler as Handler<Event, Response>,
-              shouldBase64Encode,
-            ),
+            mockServerFactory(handler, shouldBase64Encode),
           );
 
           await new Promise<void>((resolve) => {
