@@ -172,7 +172,9 @@ function normalizeQueryStringParams(
     multiValueQueryStringParameters ?? {},
   )) {
     for (const v of value ?? []) {
-      params.append(key, v);
+      if (!params.has(key)) {
+        params.append(key, v);
+      }
     }
   }
   return params;
