@@ -1,5 +1,15 @@
 # @as-integrations/aws-lambda
 
+## 1.2.0
+
+### Minor Changes
+
+- [#66](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/66) [`cea20ff`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/cea20ff2cb812b7a1f87e862b20fa428eef4e28d) Thanks [@BlenderDude](https://github.com/BlenderDude)! - Added support for base64 encoding
+
+### Patch Changes
+
+- [#57](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/57) [`6da4f62`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/6da4f62d19511b9d904679799465570bbcc65437) Thanks [@renovate](https://github.com/apps/renovate)! - Fixed content-type parsing to ignore charset definition
+
 ## 1.1.0
 
 ### Minor Changes
