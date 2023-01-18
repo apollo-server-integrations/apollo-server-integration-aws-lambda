@@ -10,3 +10,5 @@ testsuite
 unawaited
 vendia
 withrequired
+typeof
+instanceof
