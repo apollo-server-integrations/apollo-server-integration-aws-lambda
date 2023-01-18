@@ -6,7 +6,11 @@ import type {
 import type { WithRequired } from '@apollo/utils.withrequired';
 import type { Context, Handler } from 'aws-lambda';
 import type { MiddlewareFn } from './middleware';
-import type { RequestHandler } from './request-handlers/_create';
+import type {
+  RequestHandler,
+  RequestHandlerEvent,
+  RequestHandlerResult,
+} from './request-handlers/_create';
 
 export interface LambdaContextFunctionArgument<
   RH extends RequestHandler<any, any>,
@@ -23,20 +27,17 @@ export interface LambdaHandlerOptions<
   context?: ContextFunction<[LambdaContextFunctionArgument<RH>], TContext>;
 }
 
-export type LambdaHandler<RH extends RequestHandler<any, any>> =
-  RH extends RequestHandler<infer EventType, infer ResultType>
-    ? Handler<EventType, ResultType>
-    : never;
+export type LambdaHandler<RH extends RequestHandler<any, any>> = Handler<
+  RequestHandlerEvent<RH>,
+  RequestHandlerResult<RH>
+>;
 
 export function startServerAndCreateLambdaHandler<
   RH extends RequestHandler<any, any>,
 >(
   server: ApolloServer<BaseContext>,
   handler: RH,
-  options?: LambdaHandlerOptions<
-    RH extends RequestHandler<infer EventType, any> ? EventType : never,
-    BaseContext
-  >,
+  options?: LambdaHandlerOptions<RH, BaseContext>,
 ): LambdaHandler<RH>;
 export function startServerAndCreateLambdaHandler<
   RH extends RequestHandler<any, any>,
@@ -45,10 +46,7 @@ export function startServerAndCreateLambdaHandler<
   server: ApolloServer<TContext>,
   handler: RH,
   options: WithRequired<
-    LambdaHandlerOptions<
-      RH extends RequestHandler<infer EventType, any> ? EventType : never,
-      TContext
-    >,
+    LambdaHandlerOptions<RH, TContext>,
     'context'
   >,
 ): LambdaHandler<RH>;
@@ -58,10 +56,7 @@ export function startServerAndCreateLambdaHandler<
 >(
   server: ApolloServer<TContext>,
   handler: RH,
-  options?: LambdaHandlerOptions<
-    RH extends RequestHandler<infer EventType, any> ? EventType : never,
-    TContext
-  >,
+  options?: LambdaHandlerOptions<RH, TContext>,
 ): LambdaHandler<RH> {
   server.startInBackgroundHandlingStartupErrorsByLoggingAndFailingAllRequests();
 
@@ -78,17 +73,21 @@ export function startServerAndCreateLambdaHandler<
     TContext
   > = options?.context ?? defaultContext;
 
-  return async function (event: any, context: any) {
-    const resultMiddlewareFns: Array<(result: any) => any> = [];
+  return async function (event, context) {
+    const resultMiddlewareFns: Array<
+      (
+        result: RequestHandlerResult<RH>,
+      ) => Promise<void>
+    > = [];
     try {
-      const httpGraphQLRequest = handler.fromEvent(event);
-
       for (const middlewareFn of options?.middleware ?? []) {
-        const resultCallback = await middlewareFn(httpGraphQLRequest);
+        const resultCallback = await middlewareFn(event);
         if (resultCallback) {
           resultMiddlewareFns.push(resultCallback);
         }
       }
+
+      const httpGraphQLRequest = handler.fromEvent(event);
 
       const response = await server.executeHTTPGraphQLRequest({
         httpGraphQLRequest,
@@ -98,7 +97,7 @@ export function startServerAndCreateLambdaHandler<
       const result = handler.toSuccessResult(response);
 
       for (const resultMiddlewareFn of resultMiddlewareFns) {
-        resultMiddlewareFn(result);
+        await resultMiddlewareFn(result);
       }
 
       return result;
@@ -106,10 +105,10 @@ export function startServerAndCreateLambdaHandler<
       const result = handler.toErrorResult(e);
 
       for (const resultMiddlewareFn of resultMiddlewareFns) {
-        resultMiddlewareFn(result);
+        await resultMiddlewareFn(result);
       }
 
       return result;
     }
-  } as unknown as LambdaHandler<RH>;
+  };
 }

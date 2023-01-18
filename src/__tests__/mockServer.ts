@@ -28,7 +28,7 @@ export function createMockServer<RH extends RequestHandler<any, any>>(
       )!;
       res.statusCode = result.statusCode!;
       Object.entries(result.headers ?? {}).forEach(([key, value]) => {
-        res.setHeader(key, (value as string).toString());
+        res.setHeader(key, String(value));
       });
       res.write(result.body);
       res.end();

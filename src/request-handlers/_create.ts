@@ -10,6 +10,12 @@ export interface RequestHandler<EventType, ResultType> {
   toErrorResult: (error: unknown) => ResultType;
 }
 
+export type RequestHandlerEvent<T extends RequestHandler<any, any>> =
+  T extends RequestHandler<infer EventType, any> ? EventType : never;
+
+export type RequestHandlerResult<T extends RequestHandler<any, any>> =
+  T extends RequestHandler<any, infer ResultType> ? ResultType : never;
+
 export type EventParser<EventType> =
   | {
       parseHttpMethod: (event: EventType) => string;

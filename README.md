@@ -2,7 +2,7 @@
 
 ## Getting started
 
-Apollo Server runs as a part of your Lambda handler, processing GraphQL requests. This package allows you to easily integrate Apollo Server with AWS Lambda. This integration is compatible with Lambda's API Gateway V1 (REST) and V2 (HTTP). It doesn't currently claim support for any other flavors of Lambda, though PRs are welcome!
+Apollo Server runs as a part of your Lambda handler, processing GraphQL requests. This package allows you to easily integrate Apollo Server with AWS Lambda. This integration comes with built-in request handling functionality for ProxyV1, ProxyV2, and ALB events [with extensible typing](#event-extensions). Other custom integrations are able to be produced via a [Custom Handler](#custom-request-handlers) and submitted as a PR if others might find them valuable.
 
 First, install Apollo Server, graphql-js, and the Lambda handler package:
 
