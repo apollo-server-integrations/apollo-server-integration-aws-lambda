@@ -45,10 +45,7 @@ export function startServerAndCreateLambdaHandler<
 >(
   server: ApolloServer<TContext>,
   handler: RH,
-  options: WithRequired<
-    LambdaHandlerOptions<RH, TContext>,
-    'context'
-  >,
+  options: WithRequired<LambdaHandlerOptions<RH, TContext>, 'context'>,
 ): LambdaHandler<RH>;
 export function startServerAndCreateLambdaHandler<
   RH extends RequestHandler<any, any>,
@@ -75,9 +72,7 @@ export function startServerAndCreateLambdaHandler<
 
   return async function (event, context) {
     const resultMiddlewareFns: Array<
-      (
-        result: RequestHandlerResult<RH>,
-      ) => Promise<void>
+      (result: RequestHandlerResult<RH>) => Promise<void>
     > = [];
     try {
       for (const middlewareFn of options?.middleware ?? []) {
