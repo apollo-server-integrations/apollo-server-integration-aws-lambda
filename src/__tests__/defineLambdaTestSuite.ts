@@ -4,15 +4,20 @@ import {
   defineIntegrationTestSuite,
 } from '@apollo/server-integration-testsuite';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
-import type { RequestHandler } from '../requestHandler';
-import { LambdaHandler, startServerAndCreateLambdaHandler } from '..';
+import {
+  LambdaHandler,
+  startServerAndCreateLambdaHandler,
+  middleware,
+  handlers,
+} from '..';
 import { urlForHttpServer } from './mockServer';
-import type { MiddlewareFn } from '../middleware';
 
-export function defineLambdaTestSuite<RH extends RequestHandler<any, any>>(
+export function defineLambdaTestSuite<
+  RH extends handlers.RequestHandler<any, any>,
+>(
   options: {
     requestHandler: RH;
-    middleware?: Array<MiddlewareFn<RH>>;
+    middleware?: Array<middleware.MiddlewareFn<RH>>;
   },
   mockServerFactory: (
     handler: LambdaHandler<RH>,

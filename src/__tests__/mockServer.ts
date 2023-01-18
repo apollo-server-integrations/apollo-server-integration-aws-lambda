@@ -2,7 +2,7 @@ import type { IncomingMessage, Server, ServerResponse } from 'http';
 import type { Context as LambdaContext, Handler } from 'aws-lambda';
 import { format } from 'url';
 import type { AddressInfo } from 'net';
-import type { RequestHandler } from '../requestHandler';
+import type { RequestHandler } from '../request-handlers/_create';
 
 // Returns a Node http handler that invokes a Lambda handler (v1 / v2)
 export function createMockServer<RH extends RequestHandler<any, any>>(

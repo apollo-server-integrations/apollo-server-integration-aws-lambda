@@ -1,10 +1,10 @@
-import { APIGatewayProxyEventV2RequestHandler } from '../providers/APIGatewayProxyEventV2RequestHandler';
+import { handlers } from '..';
 import { defineLambdaTestSuite } from './defineLambdaTestSuite';
 import { createMockV2Server } from './mockAPIGatewayV2Server';
 
 describe('lambdaHandlerV2', () => {
   defineLambdaTestSuite(
-    { requestHandler: APIGatewayProxyEventV2RequestHandler },
+    { requestHandler: handlers.createAPIGatewayProxyEventV2RequestHandler() },
     createMockV2Server,
   );
 });

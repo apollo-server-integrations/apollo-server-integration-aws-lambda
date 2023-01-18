@@ -1,4 +1,4 @@
-import type { RequestHandler } from './requestHandler';
+import type { RequestHandler } from './request-handlers/_create';
 
 type MaybePromise<T> = Promise<T> | T;
 

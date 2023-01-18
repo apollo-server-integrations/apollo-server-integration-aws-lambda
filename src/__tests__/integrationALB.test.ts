@@ -1,10 +1,10 @@
 import { createMockALBServer } from './mockALBServer';
 import { defineLambdaTestSuite } from './defineLambdaTestSuite';
-import { ALBEventRequestHandler } from '../providers/ALBEventRequestHandler';
+import { handlers } from '..';
 
 describe('lambdaHandlerALB', () => {
   defineLambdaTestSuite(
-    { requestHandler: ALBEventRequestHandler },
+    { requestHandler: handlers.createALBEventRequestHandler() },
     createMockALBServer,
   );
 });
