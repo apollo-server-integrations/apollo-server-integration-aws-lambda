@@ -1,7 +1,6 @@
 *.json
 *.json5
 *.yml
-*.md
 
 .volta
 

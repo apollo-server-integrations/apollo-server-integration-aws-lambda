@@ -13,8 +13,11 @@ npm install @apollo/server graphql @as-integrations/aws-lambda
 Then, write the following to `server.mjs`. (By using the .mjs extension, Node treats the file as a module, allowing us to use ESM `import` syntax.)
 
 ```js
-import { ApolloServer } from "@apollo/server";
-import { startServerAndCreateLambdaHandler, handlers } from "@as-integrations/aws-lambda";
+import { ApolloServer } from '@apollo/server';
+import {
+  startServerAndCreateLambdaHandler,
+  handlers,
+} from '@as-integrations/aws-lambda';
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -26,7 +29,7 @@ const typeDefs = `#graphql
 // A map of functions which return data for the schema.
 const resolvers = {
   Query: {
-    hello: () => "world",
+    hello: () => 'world',
   },
 };
 
@@ -44,7 +47,7 @@ export default startServerAndCreateLambdaHandler(
 
 ## Middleware
 
-For mutating the event before passing off to `@apollo/server` or mutating the result right before returning, middleware can be utilized. 
+For mutating the event before passing off to `@apollo/server` or mutating the result right before returning, middleware can be utilized.
 
 > Note, this middleware is strictly for event and result mutations and should not be used for any GraphQL modification. For that, [plugins](https://www.apollographql.com/docs/apollo-server/builtin-plugins) from `@apollo/server` would be much better suited.
 
@@ -54,15 +57,13 @@ For example, if you need to set cookie headers with a V2 Proxy Result, see the f
 import {
   startServerAndCreateLambdaHandler,
   handlers,
-} from "@as-integrations/aws-lambda";
-import type {
-  APIGatewayProxyEventV2,
-} from 'aws-lambda';
-import {server} from "./server";
+} from '@as-integrations/aws-lambda';
+import type { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { server } from './server';
 
 async function regenerateCookie(event: APIGatewayProxyEventV2) {
   // ...
-  return "NEW_COOKIE";
+  return 'NEW_COOKIE';
 }
 
 export default startServerAndCreateLambdaHandler(
@@ -75,12 +76,11 @@ export default startServerAndCreateLambdaHandler(
         const cookie = await regenerateCookie(event);
         return (result) => {
           result.cookies.push(cookie);
-        }
-      }
-    ]
-  }
+        };
+      },
+    ],
+  },
 );
-
 ```
 
 If you want to define strictly typed middleware outside of the middleware array, the easiest way would be to extract your request handler into a variable and utilize the `typeof` keyword from Typescript. You could also manually use the `RequestHandler` type and fill in the event and result values yourself.
@@ -90,22 +90,24 @@ import {
   startServerAndCreateLambdaHandler,
   middleware,
   handlers,
-} from "@as-integrations/aws-lambda";
+} from '@as-integrations/aws-lambda';
 import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyStructuredResultV2,
 } from 'aws-lambda';
-import {server} from "./server";
+import { server } from './server';
 
 const requestHandler = handlers.createAPIGatewayProxyEventV2RequestHandler();
 
 // Utilizing typeof
-const cookieMiddleware: middleware.MiddlewareFn<typeof requestHandler> = (event) => {
+const cookieMiddleware: middleware.MiddlewareFn<typeof requestHandler> = (
+  event,
+) => {
   // ...
   return (result) => {
     // ...
-  }
-}
+  };
+};
 
 // Manual event filling
 const otherMiddleware: middleware.MiddlewareFn<
@@ -114,25 +116,21 @@ const otherMiddleware: middleware.MiddlewareFn<
   // ...
   return (result) => {
     // ...
-  }
-}
+  };
+};
 
-export default startServerAndCreateLambdaHandler(
-  server,
-  requestHandler,
-  {
-    middleware: [
-      // cookieMiddleware will always work here as its signature is
-      // tied to the `requestHandler` above
-      cookieMiddleware,
+export default startServerAndCreateLambdaHandler(server, requestHandler, {
+  middleware: [
+    // cookieMiddleware will always work here as its signature is
+    // tied to the `requestHandler` above
+    cookieMiddleware,
 
-      // otherMiddleware will error if the event and result types do
-      // not sufficiently overlap, meaning it is your responsibility
-      // to keep the event types in sync, but the compiler may help
-      otherMiddleware,
-    ],
-  }
-);
+    // otherMiddleware will error if the event and result types do
+    // not sufficiently overlap, meaning it is your responsibility
+    // to keep the event types in sync, but the compiler may help
+    otherMiddleware,
+  ],
+});
 ```
 
 ## Event Extensions
@@ -144,21 +142,18 @@ import {
   startServerAndCreateLambdaHandler,
   middleware,
   handlers,
-} from "@as-integrations/aws-lambda";
-import type {
-  APIGatewayProxyEventV2WithLambdaAuthorizer,
-} from 'aws-lambda';
-import {server} from "./server";
+} from '@as-integrations/aws-lambda';
+import type { APIGatewayProxyEventV2WithLambdaAuthorizer } from 'aws-lambda';
+import { server } from './server';
 
 export default startServerAndCreateLambdaHandler(
   server,
   handlers.createAPIGatewayProxyEventV2RequestHandler<
     APIGatewayProxyEventV2WithLambdaAuthorizer<{
-      myAuthorizerContext: string
+      myAuthorizerContext: string;
     }>
   >(), // This event will also be applied to the MiddlewareFn type
-)
-
+);
 ```
 
 ## Custom Request Handlers
@@ -170,8 +165,8 @@ When invoking a lambda manually, or when using an event source we don't currentl
 There are two type signatures available for parsing events:
 
 #### Method A: Helper Object
-This helper object has 4 properties that will complete a full parsing chain, and abstracts some of the work required to coerce the incoming event into a `HTTPGraphQLRequest`. This is the recommended way of parsing events.
 
+This helper object has 4 properties that will complete a full parsing chain, and abstracts some of the work required to coerce the incoming event into a `HTTPGraphQLRequest`. This is the recommended way of parsing events.
 
 ##### `parseHttpMethod(event: EventType): string`
 
@@ -227,73 +222,72 @@ error(e) {
 ### Custom Handler Example
 
 ```typescript
-
 import {
   startServerAndCreateLambdaHandler,
   handlers,
-} from "@as-integrations/aws-lambda";
-import type {
-  APIGatewayProxyEventV2,
-} from 'aws-lambda';
-import {HeaderMap} from "@apollo/server";
-import {server} from "./server";
+} from '@as-integrations/aws-lambda';
+import type { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { HeaderMap } from '@apollo/server';
+import { server } from './server';
 
 type CustomInvokeEvent = {
   httpMethod: string;
   queryParams: string;
-  headers: Record<string, string>,
-  body: string,
-}
-
-type CustomInvokeResult = {
-  success: true;
+  headers: Record<string, string>;
   body: string;
-} | {
-  success: false;
-  error: string;
-}
+};
 
+type CustomInvokeResult =
+  | {
+      success: true;
+      body: string;
+    }
+  | {
+      success: false;
+      error: string;
+    };
 
-const requestHandler = handlers.createRequestHandler<CustomInvokeEvent, CustomInvokeResult>({
-  parseHttpMethod(event) {
-    return event.httpMethod;
-  },
-  parseHeaders(event) {
-    const headerMap = new HeaderMap();
-    for(const [key, value] of Object.entries(event.headers)) {
-      headerMap.set(key, value);
-    }
-    return headerMap;
-  },
-  parseQueryParams(event) {
-    return event.queryParams;
-  },
-  parseBody(event) {
-    return event.body;
-  },
-}, {
-  success({body}) {
-    return {
-      success: true,
-      body: body.string,
-    }
-  },
-  error(e) {
-    if(e instanceof Error) {
-      return {
-        success: false,
-        error: e.toString(),
+const requestHandler = handlers.createRequestHandler<
+  CustomInvokeEvent,
+  CustomInvokeResult
+>(
+  {
+    parseHttpMethod(event) {
+      return event.httpMethod;
+    },
+    parseHeaders(event) {
+      const headerMap = new HeaderMap();
+      for (const [key, value] of Object.entries(event.headers)) {
+        headerMap.set(key, value);
       }
-    }
-    console.error('Unknown error type encountered!', e);
-    throw e;
-  }
-})
-
-export default startServerAndCreateLambdaHandler(
-  server,
-  requestHandler,
+      return headerMap;
+    },
+    parseQueryParams(event) {
+      return event.queryParams;
+    },
+    parseBody(event) {
+      return event.body;
+    },
+  },
+  {
+    success({ body }) {
+      return {
+        success: true,
+        body: body.string,
+      };
+    },
+    error(e) {
+      if (e instanceof Error) {
+        return {
+          success: false,
+          error: e.toString(),
+        };
+      }
+      console.error('Unknown error type encountered!', e);
+      throw e;
+    },
+  },
 );
 
+export default startServerAndCreateLambdaHandler(server, requestHandler);
 ```
-
