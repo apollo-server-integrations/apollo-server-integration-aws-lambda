@@ -2,7 +2,7 @@
 
 ## Getting started
 
-Apollo Server runs as a part of your Lambda handler, processing GraphQL requests. This package allows you to easily integrate Apollo Server with AWS Lambda. This integration comes with built-in request handling functionality for ProxyV1, ProxyV2, and ALB events [with extensible typing](#event-extensions). Other custom integrations are able to be produced via a [Custom Handler](#custom-request-handlers) and submitted as a PR if others might find them valuable.
+Apollo Server runs as a part of your Lambda handler, processing GraphQL requests. This package allows you to easily integrate Apollo Server with AWS Lambda. This integration comes with built-in request handling functionality for ProxyV1, ProxyV2, and ALB events [with extensible typing](#event-extensions). You can also create your own integrations via a [Custom Handler](#custom-request-handlers) and submitted as a PR if others might find them valuable.
 
 First, install Apollo Server, graphql-js, and the Lambda handler package:
 
@@ -196,7 +196,7 @@ If the helper object is too restrictive for your use-case, the other option is t
 
 ### `resultGenerator` Argument
 
-There are two possible result types, `success` and `error`, and they are to be defined as function properties on an object. Middleware will _always_ run, regardless if the generated result was from a success of error. The properties have the following signatures:
+There are two possible result types, `success` and `error`, and they are to be defined as function properties on an object. Middleware will _always_ run, regardless if the generated result was from a success or error. The properties have the following signatures:
 
 ##### `success(response: HTTPGraphQLResponse): ResultType`
 

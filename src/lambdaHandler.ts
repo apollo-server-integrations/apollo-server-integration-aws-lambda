@@ -5,7 +5,7 @@ import type {
 } from '@apollo/server';
 import type { WithRequired } from '@apollo/utils.withrequired';
 import type { Context, Handler } from 'aws-lambda';
-import type { MiddlewareFn } from './middleware';
+import type { LambdaResponse, MiddlewareFn } from './middleware';
 import type {
   RequestHandler,
   RequestHandlerEvent,
@@ -71,9 +71,8 @@ export function startServerAndCreateLambdaHandler<
   > = options?.context ?? defaultContext;
 
   return async function (event, context) {
-    const resultMiddlewareFns: Array<
-      (result: RequestHandlerResult<RH>) => Promise<void>
-    > = [];
+    const resultMiddlewareFns: Array<LambdaResponse<RequestHandlerResult<RH>>> =
+      [];
     try {
       for (const middlewareFn of options?.middleware ?? []) {
         const resultCallback = await middlewareFn(event);
