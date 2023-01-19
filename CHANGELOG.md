@@ -1,5 +1,11 @@
 # @as-integrations/aws-lambda
 
+## 1.2.1
+
+### Patch Changes
+
+- [#73](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/73) [`8a1a6f4`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/8a1a6f41db9c1f0b440c417328ae2ef7770e437e) Thanks [@trevor-scheer](https://github.com/trevor-scheer)! - Remove postinstall script which causes issues for non-TS users
+
 ## 1.2.0
 
 ### Minor Changes
