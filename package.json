@@ -18,10 +18,9 @@
     "node": ">=14.0"
   },
   "scripts": {
-    "//": "#use npx here to ensure that non-TS users triggering the postinstall script don't need to install TypeScript globally or in their project",
-    "build": "npx -p typescript tsc --build tsconfig.build.json",
+    "build": "tsc --build tsconfig.build.json",
     "clean": "git clean -dfqX",
-    "postinstall": "npm run build",
+    "prepack": "npm run build",
     "prettier-check": "prettier --check .",
     "prettier-fix": "prettier --write .",
     "publish-changeset": "changeset publish",
