@@ -5,6 +5,7 @@ changesets
 cimg
 circleci
 codesandbox
+customizability
 direnv
 testsuite
 unawaited
