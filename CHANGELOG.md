@@ -4,7 +4,7 @@
 
 ### Major Changes
 
-- [#67](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/67) [`5669d23`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/5669d237acd426fcb790ea11b1ba6632a6ea28f2) Thanks [@BlenderDude](https://github.com/BlenderDude)! - 
+- [#67](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/67) [`5669d23`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/5669d237acd426fcb790ea11b1ba6632a6ea28f2) Thanks [@BlenderDude](https://github.com/BlenderDude)! -
 
   ## Why Change?
 
