@@ -4,7 +4,9 @@
 
 ### Major Changes
 
-- [#67](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/67) [`5669d23`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/5669d237acd426fcb790ea11b1ba6632a6ea28f2) Thanks [@BlenderDude](https://github.com/BlenderDude)! - ## Why Change?
+- [#67](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/67) [`5669d23`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/5669d237acd426fcb790ea11b1ba6632a6ea28f2) Thanks [@BlenderDude](https://github.com/BlenderDude)! - 
+
+  ## Why Change?
 
   In the interest of supporting more event types and allowing user-extensibility, the event parsing has been re-architected. The goal with v2.0 is to allow customizability at each step in the event pipeline, leading to a higher level of Lambda event coverage (including 100% custom event requests).
 
