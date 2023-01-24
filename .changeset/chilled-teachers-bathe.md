@@ -8,7 +8,7 @@ In the interest of supporting more event types and allowing user-extensibility, 
 
 ## What changed?
 
-The second parameter introduces a handler that controls parsing and output generation based on the event type you are consuming. Not only did are there the 3 main event types we alreadys support, but there is a function for creating your own event parsers too in the case the pre-defined ones are not sufficient.
+The second parameter introduces a handler that controls parsing and output generation based on the event type you are consuming. We support 3 event types out-of-the-box: APIGatewayProxyV1/V2 and ALB. Additionally, there is a function for creating your own event parsers in case the pre-defined ones are not sufficient.
 
 This update also introduces middleware, a great way to modify the request on the way in or update the result on the way out.
 
@@ -45,12 +45,12 @@ export default startServerAndCreateLambdaHandler(
 );
 ```
 
-The 3 event handlers provided from the package are:
+The 3 event handlers provided by the package are:
 
 - `createAPIGatewayProxyEventV2RequestHandler()`
 - `createALBEventRequestHandler()`
 - `createAPIGatewayProxyEventRequestHandler()`
 
-Each of these also have an optional type parameter which you can use to extend upon the base event. This is useful if you are using Lambda functions with custom authorizers and need additional context in your events.
+Each of these have an optional type parameter which you can use to extend the base event. This is useful if you are using Lambda functions with custom authorizers and need additional context in your events.
 
-Creating your own event parsers are now possible as well with `handlers.createRequestHandler`. Creation of custom handlers is documented in the README.
+Creating your own event parsers is now possible with `handlers.createRequestHandler()`. Creation of custom handlers is documented in the README.
