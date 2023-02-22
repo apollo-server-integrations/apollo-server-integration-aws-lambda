@@ -22,7 +22,7 @@ function v1EventFromRequest(shouldBase64Encode: boolean) {
     const multiValueQueryStringParameters: Record<string, string[]> = {};
     for (const [key] of searchParams.entries()) {
       const all = searchParams.getAll(key);
-      if (all.length > 1) {
+      if (all.length !== 0) {
         multiValueQueryStringParameters[key] = all;
       }
     }
