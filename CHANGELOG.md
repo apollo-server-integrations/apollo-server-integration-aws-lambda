@@ -1,5 +1,11 @@
 # @as-integrations/aws-lambda
 
+## 2.0.1
+
+### Patch Changes
+
+- [#81](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/81) [`b59291a`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/b59291aed99aab8a4481d60ecc5d49e05d46c1d4) Thanks [@0x6368656174](https://github.com/0x6368656174)! - fix search params duplication
+
 ## 2.0.0
 
 ### Major Changes
