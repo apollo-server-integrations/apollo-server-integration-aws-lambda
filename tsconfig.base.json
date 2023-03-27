@@ -18,7 +18,6 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
-    "importsNotUsedAsValues": "error",
     "lib": ["es2020", "DOM"],
     "types": ["node"],
     "baseUrl": ".",
