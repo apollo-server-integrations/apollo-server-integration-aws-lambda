@@ -27,7 +27,8 @@
     "spell-check": "cspell lint '**' --no-progress || (echo 'Add any real words to cspell-dict.txt.'; exit 1)",
     "test": "jest",
     "test:ci": "jest --coverage --ci --maxWorkers=2 --reporters=default --reporters=jest-junit",
-    "watch": "tsc --build --watch"
+    "watch": "tsc --build --watch",
+    "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
     "@types/aws-lambda": "^8.10.106"
@@ -39,7 +40,10 @@
     "@changesets/cli": "2.26.1",
     "@types/jest": "29.5.0",
     "@types/node": "14.18.41",
+    "@typescript-eslint/eslint-plugin": "5.57.0",
+    "@typescript-eslint/parser": "5.57.0",
     "cspell": "6.31.1",
+    "eslint": "8.36.0",
     "jest": "29.5.0",
     "jest-junit": "15.0.0",
     "prettier": "2.8.7",

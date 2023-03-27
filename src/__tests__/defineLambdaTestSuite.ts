@@ -1,14 +1,18 @@
-import { ApolloServer, ApolloServerOptions, BaseContext } from '@apollo/server';
 import {
-  CreateServerForIntegrationTestsOptions,
+  ApolloServer,
+  type ApolloServerOptions,
+  type BaseContext,
+} from '@apollo/server';
+import {
+  type CreateServerForIntegrationTestsOptions,
   defineIntegrationTestSuite,
 } from '@apollo/server-integration-testsuite';
-import { createServer, IncomingMessage, ServerResponse } from 'http';
+import { type IncomingMessage, type ServerResponse, createServer } from 'http';
 import {
-  LambdaHandler,
+  type LambdaHandler,
+  type middleware,
+  type handlers,
   startServerAndCreateLambdaHandler,
-  middleware,
-  handlers,
 } from '..';
 import { urlForHttpServer } from './mockServer';
 
