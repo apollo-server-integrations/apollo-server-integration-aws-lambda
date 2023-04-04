@@ -2,6 +2,8 @@
 '@as-integrations/aws-lambda': minor
 ---
 
+## Short circut middleware execution
+
 You can now opt to return a Lambda result object directly from the middleware. This will cancel the middleware chain, bypass GraphQL request processing, and immediately return the Lambda result.
 
 Example
@@ -32,6 +34,8 @@ export const handler = startServerAndCreateLambdaHandler(
   },
 );
 ```
+
+## Utilize context in middleware result
 
 In order to facilitate the resolvers making updates to the resultant lambda response, the server context can be used to pass data back to the result in the middleware.
 
