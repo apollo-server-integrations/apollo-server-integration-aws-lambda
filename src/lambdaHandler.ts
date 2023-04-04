@@ -23,7 +23,7 @@ export interface LambdaHandlerOptions<
   RH extends RequestHandler<any, any>,
   TContext extends BaseContext,
 > {
-  middleware?: Array<MiddlewareFn<RH>>;
+  middleware?: Array<MiddlewareFn<RH, TContext>>;
   context?: ContextFunction<[LambdaContextFunctionArgument<RH>], TContext>;
 }
 
@@ -71,27 +71,47 @@ export function startServerAndCreateLambdaHandler<
   > = options?.context ?? defaultContext;
 
   return async function (event, context) {
-    const resultMiddlewareFns: Array<LambdaResponse<RequestHandlerResult<RH>>> =
-      [];
+    const resultMiddlewareFns: Array<
+      LambdaResponse<RequestHandlerResult<RH>, TContext>
+    > = [];
     try {
       for (const middlewareFn of options?.middleware ?? []) {
-        const resultCallback = await middlewareFn(event);
-        if (resultCallback) {
-          resultMiddlewareFns.push(resultCallback);
+        const middlewareReturnValue = await middlewareFn(event);
+        // If the middleware returns an object, we assume it's a LambdaResponse
+        if (
+          typeof middlewareReturnValue === 'object' &&
+          middlewareReturnValue !== null
+        ) {
+          return middlewareReturnValue;
+        }
+        // If the middleware returns a value, we assume it's a result middleware
+        if (middlewareReturnValue) {
+          resultMiddlewareFns.push(middlewareReturnValue);
         }
       }
 
       const httpGraphQLRequest = handler.fromEvent(event);
 
+      // Object to allow us to mutate the context value in the `context` function
+      // Read - closure goodness :)
+      let middlewareContextValue: { value: null | TContext } = { value: null };
+
       const response = await server.executeHTTPGraphQLRequest({
         httpGraphQLRequest,
-        context: () => contextFunction({ event, context }),
+        context: async () => {
+          const contextValue = await contextFunction({
+            event,
+            context,
+          });
+          middlewareContextValue.value = contextValue;
+          return contextValue;
+        },
       });
 
       const result = handler.toSuccessResult(response);
 
       for (const resultMiddlewareFn of resultMiddlewareFns) {
-        await resultMiddlewareFn(result);
+        await resultMiddlewareFn(result, middlewareContextValue.value);
       }
 
       return result;
@@ -99,7 +119,7 @@ export function startServerAndCreateLambdaHandler<
       const result = handler.toErrorResult(e);
 
       for (const resultMiddlewareFn of resultMiddlewareFns) {
-        await resultMiddlewareFn(result);
+        await resultMiddlewareFn(result, null);
       }
 
       return result;
