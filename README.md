@@ -39,9 +39,17 @@ const server = new ApolloServer({
   resolvers,
 });
 
+
+//Set up our options (optional)
+const options = {
+  middleware: [], //More on this below
+  context: {} // We can pass in our ApolloSever context here
+}
+
 export default startServerAndCreateLambdaHandler(
   server,
   handlers.createAPIGatewayProxyEventV2RequestHandler(),
+  options
 );
 ```
 
