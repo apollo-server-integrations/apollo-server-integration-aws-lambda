@@ -2,8 +2,8 @@
   "extends": [
     "config:js-lib",
     // Our default configuration. See
-    // https://github.com/apollographql/renovate-config-apollo-open-source/blob/master/package.json
-    "apollo-open-source",
+    // https://github.com/apollographql/renovate-config-apollo-open-source/blob/master/default.json5
+    "github>apollographql/renovate-config-apollo-open-source:default.json5",
   ],
   "packageRules": [
     // Bunch up all non-major dependencies into a single PR.  In the common case
