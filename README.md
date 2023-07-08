@@ -42,6 +42,13 @@ const server = new ApolloServer({
 export default startServerAndCreateLambdaHandler(
   server,
   handlers.createAPIGatewayProxyEventV2RequestHandler(),
+  {
+    context: async ({ event }) => {
+      return {
+        myCustomAuthContext: event.requestContext.authorizer,
+      };
+    },
+  },
 );
 ```
 
@@ -144,15 +151,30 @@ import {
   handlers,
 } from '@as-integrations/aws-lambda';
 import type { APIGatewayProxyEventV2WithLambdaAuthorizer } from 'aws-lambda';
-import { server } from './server';
 
-export default startServerAndCreateLambdaHandler(
+interface MyApolloContext {
+  stage: string;
+  customAuth: string;
+}
+
+const server = new ApolloServer<MyApolloContext>({
+  typeDefs,
+  resolvers,
+});
+
+export const main = startServerAndCreateLambdaHandler(
   server,
   handlers.createAPIGatewayProxyEventV2RequestHandler<
-    APIGatewayProxyEventV2WithLambdaAuthorizer<{
-      myAuthorizerContext: string;
-    }>
-  >(), // This event will also be applied to the MiddlewareFn type
+    APIGatewayProxyEventV2WithLambdaAuthorizer<{ myAuthorizerContext: string }>
+  >(),
+  {
+    context: async ({ event }) => {
+      return {
+        stage: event.requestContext.stage,
+        customAuth: event.requestContext.authorizer.lambda.myAuthorizerContext,
+      };
+    },
+  },
 );
 ```
 
