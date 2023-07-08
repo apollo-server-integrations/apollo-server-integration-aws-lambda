@@ -18,6 +18,7 @@ import {
   startServerAndCreateLambdaHandler,
   handlers,
 } from '@as-integrations/aws-lambda';
+import { customMiddleware } from './custom-middleware';
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -48,6 +49,7 @@ export default startServerAndCreateLambdaHandler(
         myCustomAuthContext: event.requestContext.authorizer,
       };
     },
+    middleware: [customMiddleware],
   },
 );
 ```
@@ -151,6 +153,7 @@ import {
   handlers,
 } from '@as-integrations/aws-lambda';
 import type { APIGatewayProxyEventV2WithLambdaAuthorizer } from 'aws-lambda';
+import { customMiddleware } from './custom-middleware';
 
 interface MyApolloContext {
   stage: string;
@@ -174,6 +177,7 @@ export const main = startServerAndCreateLambdaHandler(
         customAuth: event.requestContext.authorizer.lambda.myAuthorizerContext,
       };
     },
+    middleware: [customMiddleware],
   },
 );
 ```
