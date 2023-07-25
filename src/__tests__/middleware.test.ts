@@ -1,34 +1,53 @@
 import { ApolloServer } from '@apollo/server';
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { handlers, startServerAndCreateLambdaHandler } from '..';
+import gql from 'graphql-tag';
+import { type DocumentNode, print } from 'graphql';
 
-const event: APIGatewayProxyEventV2 = {
-  version: '2',
-  headers: {
-    'content-type': 'application/json',
-  },
-  isBase64Encoded: false,
-  rawQueryString: '',
-  requestContext: {
-    http: {
-      method: 'POST',
+function createEvent(doc: DocumentNode): APIGatewayProxyEventV2 {
+  return {
+    version: '2',
+    headers: {
+      'content-type': 'application/json',
     },
-    // Other requestContext properties omitted for brevity
-  } as any,
-  rawPath: '/',
-  routeKey: '/',
-  body: '{"operationName": null, "variables": null, "query": "{ hello }"}',
-};
+    isBase64Encoded: false,
+    rawQueryString: '',
+    requestContext: {
+      http: {
+        method: 'POST',
+      },
+      // Other requestContext properties omitted for brevity
+    } as any,
+    rawPath: '/',
+    routeKey: '/',
+    body: JSON.stringify({
+      query: print(doc),
+    }),
+  };
+}
 
 const typeDefs = `#graphql
   type Query {
     hello: String
+  }
+  type Mutation {
+    mutateContext: String
   }
 `;
 
 const resolvers = {
   Query: {
     hello: () => 'world',
+  },
+  Mutation: {
+    mutateContext: async (
+      _root: any,
+      _args: any,
+      context: { foo: string | null },
+    ) => {
+      context.foo = 'bar';
+      return 'ok';
+    },
   },
 };
 
@@ -39,6 +58,11 @@ const server = new ApolloServer({
 
 describe('Request mutation', () => {
   it('updates incoming event headers', async () => {
+    const event = createEvent(gql`
+      query {
+        hello
+      }
+    `);
     const headerAdditions = {
       'x-injected-header': 'foo',
     };
@@ -46,6 +70,11 @@ describe('Request mutation', () => {
       server,
       handlers.createAPIGatewayProxyEventV2RequestHandler(),
       {
+        context: async () => {
+          return {
+            foo: null,
+          };
+        },
         middleware: [
           async (event) => {
             Object.assign(event.headers, headerAdditions);
@@ -58,15 +87,52 @@ describe('Request mutation', () => {
       expect(event.headers[key]).toBe(value);
     }
   });
+  it('returns early if middleware returns a result', async () => {
+    const event = createEvent(gql`
+      query {
+        hello
+      }
+    `);
+    const lambdaHandler = startServerAndCreateLambdaHandler(
+      server,
+      handlers.createAPIGatewayProxyEventV2RequestHandler(),
+      {
+        context: async () => {
+          return {
+            foo: null,
+          };
+        },
+        middleware: [
+          async () => {
+            return {
+              statusCode: 418,
+            };
+          },
+        ],
+      },
+    );
+    const result = await lambdaHandler(event, {} as any, () => {})!;
+    expect(result.statusCode).toBe(418);
+  });
 });
 
 describe('Response mutation', () => {
   it('adds cookie values to emitted result', async () => {
+    const event = createEvent(gql`
+      query {
+        hello
+      }
+    `);
     const cookieValue = 'foo=bar';
     const lambdaHandler = startServerAndCreateLambdaHandler(
       server,
       handlers.createAPIGatewayProxyEventV2RequestHandler(),
       {
+        context: async () => {
+          return {
+            foo: null,
+          };
+        },
         middleware: [
           async () => {
             return async (result) => {

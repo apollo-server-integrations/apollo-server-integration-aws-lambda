@@ -75,9 +75,17 @@ export function startServerAndCreateLambdaHandler<
       [];
     try {
       for (const middlewareFn of options?.middleware ?? []) {
-        const resultCallback = await middlewareFn(event);
-        if (resultCallback) {
-          resultMiddlewareFns.push(resultCallback);
+        const middlewareReturnValue = await middlewareFn(event);
+        // If the middleware returns an object, we assume it's a LambdaResponse
+        if (
+          typeof middlewareReturnValue === 'object' &&
+          middlewareReturnValue !== null
+        ) {
+          return middlewareReturnValue;
+        }
+        // If the middleware returns a function, we assume it's a result callback
+        if (middlewareReturnValue) {
+          resultMiddlewareFns.push(middlewareReturnValue);
         }
       }
 
@@ -85,7 +93,12 @@ export function startServerAndCreateLambdaHandler<
 
       const response = await server.executeHTTPGraphQLRequest({
         httpGraphQLRequest,
-        context: () => contextFunction({ event, context }),
+        context: () => {
+          return contextFunction({
+            event,
+            context,
+          });
+        },
       });
 
       const result = handler.toSuccessResult(response);

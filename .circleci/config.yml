@@ -67,7 +67,6 @@ jobs:
       - run: npm run spell-check
 
 workflows:
-  version: 2
   Build:
     jobs:
       - NodeJS:
@@ -75,9 +74,9 @@ workflows:
           matrix:
             parameters:
               node-version:
-                - "14"
                 - "16"
                 - "18"
+                - "20"
       - Prettier
       - Lint
       - Spell Check
