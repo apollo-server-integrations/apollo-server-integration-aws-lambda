@@ -1,5 +1,46 @@
 # @as-integrations/aws-lambda
 
+## 3.0.0
+
+### Major Changes
+
+- [#110](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/110) [`e76fc08`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/e76fc08da5152f1bfb9bae3e29033d714474fd33) Thanks [@trevor-scheer](https://github.com/trevor-scheer)! - Drop support for Node v14
+
+### Minor Changes
+
+- [#91](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/91) [`71c94df`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/71c94dfc96aa6f3a3d08928162f7480be375a31e) Thanks [@BlenderDude](https://github.com/BlenderDude)! - ## Short circuit middleware execution
+
+  You can now opt to return a Lambda result object directly from the middleware. This will cancel the middleware chain, bypass GraphQL request processing, and immediately return the Lambda result.
+
+  Example
+
+  ```ts
+  export const handler = startServerAndCreateLambdaHandler(
+    server,
+    handlers.createAPIGatewayProxyEventV2RequestHandler(),
+    {
+      context: async () => {
+        return {};
+      },
+      middleware: [
+        async (event) => {
+          const psk = Buffer.from('SuperSecretPSK');
+          const token = Buffer.from(event.headers['X-Auth-Token']);
+          if (
+            psk.byteLength !== token.byteLength ||
+            crypto.timingSafeEqual(psk, token)
+          ) {
+            return {
+              statusCode: '403',
+              body: 'Forbidden',
+            };
+          }
+        },
+      ],
+    },
+  );
+  ```
+
 ## 2.0.1
 
 ### Patch Changes
