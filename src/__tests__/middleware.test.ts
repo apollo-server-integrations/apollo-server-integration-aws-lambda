@@ -1,7 +1,5 @@
 import { ApolloServer } from '@apollo/server';
-import type {
-  APIGatewayProxyEventV2,
-} from 'aws-lambda';
+import type { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { handlers, startServerAndCreateLambdaHandler } from '..';
 import gql from 'graphql-tag';
 import { type DocumentNode, print } from 'graphql';

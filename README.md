@@ -58,7 +58,7 @@ import {
 
 type ContextValue = {
   isAuthenticated: boolean;
-}
+};
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -79,8 +79,8 @@ const server = new ApolloServer<ContextValue>({
         //   1. `resolvers` defined inline in the server config (not particularly scalable, but works)
         //   2. Add the type in the resolver function. ex. `(root, args, context: ContextValue)`
         //   3. Propagate the type from an outside definition like GraphQL Codegen
-        return context.isAuthenticated
-      }
+        return context.isAuthenticated;
+      },
     },
   },
 });
@@ -88,12 +88,12 @@ const server = new ApolloServer<ContextValue>({
 export default startServerAndCreateLambdaHandler(
   server,
   handlers.createAPIGatewayProxyEventV2RequestHandler({
-    context: async ({event}) => {
+    context: async ({ event }) => {
       // Do some parsing on the event (parse JWT, cookie, auth header, etc.)
       return {
-        isAuthenticated: true
-      }
-    }
+        isAuthenticated: true,
+      };
+    },
   }),
 );
 ```

@@ -71,9 +71,8 @@ export function startServerAndCreateLambdaHandler<
   > = options?.context ?? defaultContext;
 
   return async function (event, context) {
-    const resultMiddlewareFns: Array<
-      LambdaResponse<RequestHandlerResult<RH>>
-    > = [];
+    const resultMiddlewareFns: Array<LambdaResponse<RequestHandlerResult<RH>>> =
+      [];
     try {
       for (const middlewareFn of options?.middleware ?? []) {
         const middlewareReturnValue = await middlewareFn(event);
@@ -98,7 +97,7 @@ export function startServerAndCreateLambdaHandler<
           return contextFunction({
             event,
             context,
-          })
+          });
         },
       });
 
