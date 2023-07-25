@@ -1,7 +1,7 @@
 {
   "name": "@as-integrations/aws-lambda",
   "description": "An Apollo Server integration for hosting on AWS Lambda",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "author": "Michael Watson & Daniel Abdelsamed",
   "license": "MIT",
   "repository": {
