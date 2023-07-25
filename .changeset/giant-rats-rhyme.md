@@ -2,7 +2,7 @@
 '@as-integrations/aws-lambda': minor
 ---
 
-## Short circut middleware execution
+## Short circuit middleware execution
 
 You can now opt to return a Lambda result object directly from the middleware. This will cancel the middleware chain, bypass GraphQL request processing, and immediately return the Lambda result.
 

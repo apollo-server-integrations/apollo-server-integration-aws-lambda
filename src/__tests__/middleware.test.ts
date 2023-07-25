@@ -105,8 +105,7 @@ describe('Request mutation', () => {
           };
         },
         middleware: [
-          async (event) => {
-            event.headers[''];
+          async () => {
             return {
               statusCode: 418,
             };

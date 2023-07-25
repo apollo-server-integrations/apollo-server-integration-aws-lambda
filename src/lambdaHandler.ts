@@ -84,7 +84,7 @@ export function startServerAndCreateLambdaHandler<
         ) {
           return middlewareReturnValue;
         }
-        // If the middleware returns a value, we assume it's a result middleware
+        // If the middleware returns a function, we assume it's a result callback
         if (middlewareReturnValue) {
           resultMiddlewareFns.push(middlewareReturnValue);
         }
