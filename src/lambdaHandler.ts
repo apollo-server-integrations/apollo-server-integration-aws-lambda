@@ -23,7 +23,7 @@ export interface LambdaHandlerOptions<
   RH extends RequestHandler<any, any>,
   TContext extends BaseContext,
 > {
-  middleware?: Array<MiddlewareFn<RH, TContext>>;
+  middleware?: Array<MiddlewareFn<RH>>;
   context?: ContextFunction<[LambdaContextFunctionArgument<RH>], TContext>;
 }
 
@@ -72,7 +72,7 @@ export function startServerAndCreateLambdaHandler<
 
   return async function (event, context) {
     const resultMiddlewareFns: Array<
-      LambdaResponse<RequestHandlerResult<RH>, TContext>
+      LambdaResponse<RequestHandlerResult<RH>>
     > = [];
     try {
       for (const middlewareFn of options?.middleware ?? []) {
@@ -92,26 +92,20 @@ export function startServerAndCreateLambdaHandler<
 
       const httpGraphQLRequest = handler.fromEvent(event);
 
-      // Object to allow us to mutate the context value in the `context` function
-      // Read - closure goodness :)
-      let middlewareContextValue: { value: null | TContext } = { value: null };
-
       const response = await server.executeHTTPGraphQLRequest({
         httpGraphQLRequest,
-        context: async () => {
-          const contextValue = await contextFunction({
+        context: () => {
+          return contextFunction({
             event,
             context,
-          });
-          middlewareContextValue.value = contextValue;
-          return contextValue;
+          })
         },
       });
 
       const result = handler.toSuccessResult(response);
 
       for (const resultMiddlewareFn of resultMiddlewareFns) {
-        await resultMiddlewareFn(result, middlewareContextValue.value);
+        await resultMiddlewareFn(result);
       }
 
       return result;
@@ -119,7 +113,7 @@ export function startServerAndCreateLambdaHandler<
       const result = handler.toErrorResult(e);
 
       for (const resultMiddlewareFn of resultMiddlewareFns) {
-        await resultMiddlewareFn(result, null);
+        await resultMiddlewareFn(result);
       }
 
       return result;

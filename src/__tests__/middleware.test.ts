@@ -1,7 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import type {
   APIGatewayProxyEventV2,
-  APIGatewayProxyStructuredResultV2,
 } from 'aws-lambda';
 import { handlers, startServerAndCreateLambdaHandler } from '..';
 import gql from 'graphql-tag';
@@ -151,41 +150,5 @@ describe('Response mutation', () => {
     );
     const result = await lambdaHandler(event, {} as any, () => {})!;
     expect(result.cookies).toContain(cookieValue);
-  });
-  it('is allowed to access updated context in result middleware', async () => {
-    const event = createEvent(gql`
-      mutation {
-        mutateContext
-      }
-    `);
-    const lambdaHandler = startServerAndCreateLambdaHandler<
-      handlers.RequestHandler<
-        APIGatewayProxyEventV2,
-        APIGatewayProxyStructuredResultV2
-      >,
-      {
-        foo: string | null;
-      }
-    >(server, handlers.createAPIGatewayProxyEventV2RequestHandler(), {
-      context: async () => {
-        return {
-          foo: 'bar',
-        };
-      },
-      middleware: [
-        async () => {
-          return async (result, context) => {
-            if (!result.cookies) {
-              result.cookies = [];
-            }
-            if (context?.foo) {
-              result.cookies.push(`foo=${context?.foo ?? 'UNKNOWN'}`);
-            }
-          };
-        },
-      ],
-    });
-    const result = await lambdaHandler(event, {} as any, () => {})!;
-    expect(result.cookies).toContain(`foo=bar`);
   });
 });
