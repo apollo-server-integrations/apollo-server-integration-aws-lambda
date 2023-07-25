@@ -22,7 +22,7 @@ import {
 // The GraphQL schema
 const typeDefs = `#graphql
   type Query {
-    hello: String
+    hello: String!
   }
 `;
 
@@ -42,6 +42,59 @@ const server = new ApolloServer({
 export default startServerAndCreateLambdaHandler(
   server,
   handlers.createAPIGatewayProxyEventV2RequestHandler(),
+);
+```
+
+## Context
+
+As with all Apollo Server 4 integrations, the context resolution is done in the integration. For the Lambda integration, it will look like the following:
+
+```ts
+import { ApolloServer } from '@apollo/server';
+import {
+  startServerAndCreateLambdaHandler,
+  handlers,
+} from '@as-integrations/aws-lambda';
+
+type ContextValue = {
+  isAuthenticated: boolean;
+};
+
+// The GraphQL schema
+const typeDefs = `#graphql
+  type Query {
+    hello: String!
+    isAuthenticated: Boolean!
+  }
+`;
+
+// Set up Apollo Server
+const server = new ApolloServer<ContextValue>({
+  typeDefs,
+  resolvers: {
+    Query: {
+      hello: () => 'world',
+      isAuthenticated: (root, args, context) => {
+        // For context typing to be valid one of the following must be implemented
+        //   1. `resolvers` defined inline in the server config (not particularly scalable, but works)
+        //   2. Add the type in the resolver function. ex. `(root, args, context: ContextValue)`
+        //   3. Propagate the type from an outside definition like GraphQL Codegen
+        return context.isAuthenticated;
+      },
+    },
+  },
+});
+
+export default startServerAndCreateLambdaHandler(
+  server,
+  handlers.createAPIGatewayProxyEventV2RequestHandler({
+    context: async ({ event }) => {
+      // Do some parsing on the event (parse JWT, cookie, auth header, etc.)
+      return {
+        isAuthenticated: true,
+      };
+    },
+  }),
 );
 ```
 
@@ -82,6 +135,8 @@ export default startServerAndCreateLambdaHandler(
   },
 );
 ```
+
+### Middleware Typing
 
 If you want to define strictly typed middleware outside of the middleware array, the easiest way would be to extract your request handler into a variable and utilize the `typeof` keyword from Typescript. You could also manually use the `RequestHandler` type and fill in the event and result values yourself.
 
@@ -129,6 +184,47 @@ export default startServerAndCreateLambdaHandler(server, requestHandler, {
     // not sufficiently overlap, meaning it is your responsibility
     // to keep the event types in sync, but the compiler may help
     otherMiddleware,
+  ],
+});
+```
+
+### Middleware Short Circuit
+
+In some situations, a middleware function might require the execution end before reaching Apollo Server. This might be a global auth guard or session token lookup.
+
+To achieve this, the request middleware function accepts `ResultType` or `Promise<ResultType>` as a return type. Should middleware resolve to such a value, that result is returned and no further execution occurs.
+
+```typescript
+import {
+  startServerAndCreateLambdaHandler,
+  middleware,
+  handlers,
+} from '@as-integrations/aws-lambda';
+import type {
+  APIGatewayProxyEventV2,
+  APIGatewayProxyStructuredResultV2,
+} from 'aws-lambda';
+import { server } from './server';
+
+const requestHandler = handlers.createAPIGatewayProxyEventV2RequestHandler();
+
+// Utilizing typeof
+const sessionMiddleware: middleware.MiddlewareFn<typeof requestHandler> = (
+  event,
+) => {
+  // ... check session
+  if (!event.headers['X-Session-Key']) {
+    // If header doesn't exist, return early
+    return {
+      statusCode: 401
+      body: 'Unauthorized'
+    }
+  }
+};
+
+export default startServerAndCreateLambdaHandler(server, requestHandler, {
+  middleware: [
+    sessionMiddleware,
   ],
 });
 ```
