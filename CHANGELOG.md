@@ -1,5 +1,11 @@
 # @as-integrations/aws-lambda
 
+## 3.1.0
+
+### Minor Changes
+
+- [#122](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/122) [`d1e8271`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/d1e827170bd4fa947bbacc5b588c129bbbc9192b) Thanks [@BlenderDude](https://github.com/BlenderDude)! - Fixes missing `decodeURIComponent` during GET request parsing of query string for ALB and V1 event
+
 ## 3.0.0
 
 ### Major Changes
