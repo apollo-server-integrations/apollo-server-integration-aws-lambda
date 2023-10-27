@@ -95,7 +95,7 @@ export default startServerAndCreateLambdaHandler(
         isAuthenticated: true,
       };
     },
-  }
+  },
 );
 ```
 
