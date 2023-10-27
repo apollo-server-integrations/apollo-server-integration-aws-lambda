@@ -87,14 +87,15 @@ const server = new ApolloServer<ContextValue>({
 
 export default startServerAndCreateLambdaHandler(
   server,
-  handlers.createAPIGatewayProxyEventV2RequestHandler({
+  handlers.createAPIGatewayProxyEventV2RequestHandler(),
+  {
     context: async ({ event }) => {
       // Do some parsing on the event (parse JWT, cookie, auth header, etc.)
       return {
         isAuthenticated: true,
       };
     },
-  }),
+  },
 );
 ```
 
