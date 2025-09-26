@@ -103,7 +103,6 @@
   ```
 
   The 3 event handlers provided by the package are:
-
   - `createAPIGatewayProxyEventV2RequestHandler()`
   - `createALBEventRequestHandler()`
   - `createAPIGatewayProxyEventRequestHandler()`
