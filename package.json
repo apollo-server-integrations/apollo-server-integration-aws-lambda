@@ -34,13 +34,13 @@
     "@types/aws-lambda": "^8.10.152"
   },
   "devDependencies": {
-    "@apollo/server": "5.0.0",
-    "@apollo/server-integration-testsuite": "5.0.0",
+    "@apollo/server": "5.1.0",
+    "@apollo/server-integration-testsuite": "5.1.0",
     "@apollo/utils.withrequired": "3.0.0",
     "@changesets/changelog-github": "0.5.1",
     "@changesets/cli": "2.29.7",
     "@types/jest": "30.0.0",
-    "@types/node": "20.19.23",
+    "@types/node": "20.19.24",
     "@typescript-eslint/eslint-plugin": "8.46.2",
     "@typescript-eslint/parser": "8.46.2",
     "cspell": "9.2.2",
@@ -56,7 +56,7 @@
     "@apollo/server": "^5.0.0"
   },
   "volta": {
-    "node": "22.21.0",
+    "node": "22.21.1",
     "npm": "11.6.2"
   }
 }
