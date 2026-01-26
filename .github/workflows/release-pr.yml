@@ -10,6 +10,10 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -17,10 +21,10 @@ jobs:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
 
-      - name: Setup Node.js 22.x
+      - name: Setup Node.js 24.x
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
 
       - name: Install Dependencies
         run: npm i
@@ -31,4 +35,4 @@ jobs:
           publish: npm run publish-changeset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ""

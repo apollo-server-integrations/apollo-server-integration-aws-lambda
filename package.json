@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda"
+    "url": "git+https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda.git"
   },
   "homepage": "https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda#readme",
   "bugs": {
