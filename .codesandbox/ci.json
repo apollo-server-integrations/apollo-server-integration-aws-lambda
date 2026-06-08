@@ -1,3 +1,4 @@
 {
-  "sandboxes": ["apollo-server-integration-aws-lambda-k6ismd"]
+  "sandboxes": ["apollo-server-integration-aws-lambda-k6ismd"],
+  "node": "22"
 }
