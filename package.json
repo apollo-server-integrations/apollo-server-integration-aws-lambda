@@ -46,7 +46,7 @@
     "cspell": "9.8.0",
     "eslint": "9.39.4",
     "jest": "30.4.2",
-    "jest-junit": "16.0.0",
+    "jest-junit": "17.0.0",
     "prettier": "3.8.3",
     "ts-jest": "29.4.11",
     "ts-node": "10.9.2",
