@@ -15,7 +15,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
-    "node": ">=16.0"
+    "node": ">=22"
   },
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
