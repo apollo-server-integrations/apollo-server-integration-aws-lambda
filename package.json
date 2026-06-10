@@ -15,7 +15,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
-    "node": ">=16.0"
+    "node": ">=22"
   },
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
@@ -34,21 +34,21 @@
     "@types/aws-lambda": "^8.10.152"
   },
   "devDependencies": {
-    "@apollo/server": "5.3.0",
-    "@apollo/server-integration-testsuite": "5.3.0",
+    "@apollo/server": "5.5.1",
+    "@apollo/server-integration-testsuite": "5.5.1",
     "@apollo/utils.withrequired": "3.0.0",
-    "@changesets/changelog-github": "0.5.2",
-    "@changesets/cli": "2.29.8",
+    "@changesets/changelog-github": "0.7.0",
+    "@changesets/cli": "2.31.0",
     "@types/jest": "30.0.0",
-    "@types/node": "20.19.30",
-    "@typescript-eslint/eslint-plugin": "8.53.1",
-    "@typescript-eslint/parser": "8.53.1",
-    "cspell": "9.6.0",
-    "eslint": "9.39.2",
-    "jest": "30.2.0",
-    "jest-junit": "16.0.0",
-    "prettier": "3.8.1",
-    "ts-jest": "29.4.6",
+    "@types/node": "20.19.42",
+    "@typescript-eslint/eslint-plugin": "8.61.0",
+    "@typescript-eslint/parser": "8.61.0",
+    "cspell": "10.0.1",
+    "eslint": "10.4.1",
+    "jest": "30.4.2",
+    "jest-junit": "17.0.0",
+    "prettier": "3.8.3",
+    "ts-jest": "29.4.11",
     "ts-node": "10.9.2",
     "typescript": "5.9.3"
   },
@@ -56,7 +56,7 @@
     "@apollo/server": "^5.0.0"
   },
   "volta": {
-    "node": "24.16.0",
-    "npm": "11.8.0"
+    "node": "22.22.3",
+    "npm": "11.16.0"
   }
 }
