@@ -75,6 +75,7 @@ workflows:
             parameters:
               node-version:
                 - "22"
+                - "24"
       - Prettier
       - Lint
       - Spell Check
