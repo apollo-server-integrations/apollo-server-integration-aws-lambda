@@ -1,5 +1,11 @@
 # @as-integrations/aws-lambda
 
+## 4.1.0
+
+### Minor Changes
+
+- [#232](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/232) [`a9cf3d8`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/a9cf3d82eb1df4517d796accd823f823c1b604cc) Thanks [@jay-l-e-e](https://github.com/jay-l-e-e)! - Drop Node 20 support, require Node >=22
+
 ## 4.0.1
 
 ### Patch Changes
