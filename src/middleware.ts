@@ -1,8 +1,9 @@
-import type {
-  RequestHandler,
-  RequestHandlerEvent,
-  RequestHandlerResult,
-  StreamRequestHandler,
+import {
+  isStreamRequestHandler,
+  type RequestHandler,
+  type RequestHandlerEvent,
+  type RequestHandlerResult,
+  type StreamRequestHandler,
 } from './request-handlers/_create';
 
 export type LambdaResponse<ResultType> = (result: ResultType) => Promise<void>;
@@ -56,6 +57,10 @@ export async function runMiddleware<
       middleware: resultMiddlewareFns,
     };
   } catch (e) {
+    if (isStreamRequestHandler(handler)) {
+      throw e;
+    }
+
     const result = handler.toErrorResult(e);
 
     for (const resultMiddlewareFn of resultMiddlewareFns) {

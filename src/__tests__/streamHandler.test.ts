@@ -280,4 +280,32 @@ describe('Stream Lambda Handler', () => {
     expect(captured.getMetadata()?.statusCode).toBe(400);
     expect(captured.getBody()).toContain('JSON');
   });
+
+  it('writes a 400 error response when middleware throws', async () => {
+    const server = new ApolloServer({ typeDefs, resolvers });
+    const lambdaHandler = startServerAndCreateLambdaHandler(
+      server,
+      handlers.createAPIGatewayProxyEventV2StreamRequestHandler(),
+      {
+        middleware: [
+          async () => {
+            throw new Error('middleware exploded');
+          },
+        ],
+      },
+    );
+
+    await lambdaHandler(
+      createV2Event(gql`
+        query {
+          hello
+        }
+      `),
+      {} as any,
+      () => {},
+    );
+
+    expect(captured.getMetadata()?.statusCode).toBe(400);
+    expect(captured.getBody()).toBe('middleware exploded');
+  });
 });
