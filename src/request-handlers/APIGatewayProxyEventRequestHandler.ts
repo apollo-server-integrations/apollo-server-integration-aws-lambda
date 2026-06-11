@@ -38,7 +38,7 @@ export const createAPIGatewayProxyEventRequestHandler = <
           event.multiValueQueryStringParameters ?? {},
         )) {
           for (const v of value ?? []) {
-            params.append(key, v);
+            params.append(key, decodeURIComponent(v));
           }
         }
         return params.toString();

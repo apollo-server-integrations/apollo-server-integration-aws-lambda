@@ -37,13 +37,13 @@ export const createALBEventRequestHandler = <
         for (const [key, value] of Object.entries(
           event.queryStringParameters ?? {},
         )) {
-          params.append(key, value ?? '');
+          params.append(key, decodeURIComponent(value ?? ''));
         }
         for (const [key, value] of Object.entries(
           event.multiValueQueryStringParameters ?? {},
         )) {
           for (const v of value ?? []) {
-            params.append(key, v);
+            params.append(key, decodeURIComponent(v));
           }
         }
         return params.toString();
