@@ -95,12 +95,15 @@ export function createStreamRequestHandler<EventType>(
       };
     },
     buildHTTPMetadata: async (response) => {
-      const { headers, status } = response;
+      const { headers, status, body } = response;
 
       return {
         statusCode: status ?? 200,
         headers: {
           ...Object.fromEntries(headers),
+          ...(body.kind === 'complete'
+            ? { 'content-length': Buffer.byteLength(body.string).toString() }
+            : {}),
         },
       };
     },
