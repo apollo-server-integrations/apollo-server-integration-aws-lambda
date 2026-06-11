@@ -36,12 +36,15 @@ export async function runMiddleware<
   try {
     for (const middlewareFn of middleware) {
       const middlewareReturnValue = await middlewareFn(event);
-      // If the middleware returns an object, we assume it's a LambdaResponse
+      // If the middleware returns an object, we assume it's an early result
       if (
         typeof middlewareReturnValue === 'object' &&
         middlewareReturnValue !== null
       ) {
-        return middlewareReturnValue;
+        return {
+          status: 'result',
+          result: middlewareReturnValue,
+        };
       }
       // If the middleware returns a function, we assume it's a result callback
       if (middlewareReturnValue) {

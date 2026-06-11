@@ -1,6 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import type { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { handlers, startServerAndCreateLambdaHandler } from '..';
+import { handlers, middleware, startServerAndCreateLambdaHandler } from '..';
 import gql from 'graphql-tag';
 import { type DocumentNode, print } from 'graphql';
 
@@ -147,5 +147,84 @@ describe('Response mutation', () => {
     );
     const result = await lambdaHandler(event, {} as any, () => {})!;
     expect(result.cookies).toContain(cookieValue);
+  });
+});
+
+describe('runMiddleware', () => {
+  const mockHandler: handlers.RequestHandler<any, any> = {
+    fromEvent: jest.fn(),
+    toSuccessResult: jest.fn(),
+    toErrorResult: jest
+      .fn()
+      .mockReturnValue({ statusCode: 500, body: 'internal error' }),
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns continue with empty middleware list', async () => {
+    const result = await middleware.runMiddleware({}, [], mockHandler);
+    expect(result.status).toBe('continue');
+    if (result.status === 'continue') {
+      expect(result.middleware).toEqual([]);
+    }
+  });
+
+  it('collects result-callback middleware into the continue result', async () => {
+    const callback = jest.fn().mockResolvedValue(undefined);
+    const result = await middleware.runMiddleware(
+      {},
+      [async () => callback],
+      mockHandler,
+    );
+    expect(result.status).toBe('continue');
+    if (result.status === 'continue') {
+      expect(result.middleware).toHaveLength(1);
+      expect(result.middleware[0]).toBe(callback);
+    }
+  });
+
+  it('returns early result when middleware returns an object', async () => {
+    const earlyResult = { statusCode: 418 };
+    const result = await middleware.runMiddleware(
+      {},
+      [async () => earlyResult],
+      mockHandler,
+    );
+    expect(result.status).toBe('result');
+    if (result.status === 'result') {
+      expect(result.result).toBe(earlyResult);
+    }
+  });
+
+  it('calls toErrorResult and returns result when middleware throws', async () => {
+    const error = new Error('middleware exploded');
+    const result = await middleware.runMiddleware(
+      {},
+      [
+        async () => {
+          throw error;
+        },
+      ],
+      mockHandler,
+    );
+    expect(mockHandler.toErrorResult).toHaveBeenCalledWith(error);
+    expect(result.status).toBe('result');
+    if (result.status === 'result') {
+      expect(result.result).toEqual({ statusCode: 500, body: 'internal error' });
+    }
+  });
+
+  it('invokes collected callbacks before returning an error result on throw', async () => {
+    const callback = jest.fn().mockResolvedValue(undefined);
+    const error = new Error('late throw');
+    const result = await middleware.runMiddleware(
+      {},
+      [async () => callback, async () => { throw error; }],
+      mockHandler,
+    );
+    expect(result.status).toBe('result');
+    expect(callback).toHaveBeenCalledWith({ statusCode: 500, body: 'internal error' });
   });
 });
