@@ -74,8 +74,8 @@ workflows:
           matrix:
             parameters:
               node-version:
-                - "20"
                 - "22"
+                - "24"
       - Prettier
       - Lint
       - Spell Check
