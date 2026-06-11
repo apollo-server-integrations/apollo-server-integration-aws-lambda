@@ -1,7 +1,11 @@
 import url from 'node:url';
 import { Writable } from 'node:stream';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { APIGatewayProxyEventV2, Context as LambdaContext, Handler } from 'aws-lambda';
+import type {
+  APIGatewayProxyEventV2,
+  Context as LambdaContext,
+  Handler,
+} from 'aws-lambda';
 
 // Per-invocation state keyed by event object (unique per request).
 // Using WeakMaps so concurrent requests don't overwrite each other's state.
