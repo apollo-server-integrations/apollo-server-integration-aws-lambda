@@ -14,3 +14,5 @@ withrequired
 typeof
 instanceof
 codegen
+awslambda
+streamify

@@ -212,7 +212,10 @@ describe('runMiddleware', () => {
     expect(mockHandler.toErrorResult).toHaveBeenCalledWith(error);
     expect(result.status).toBe('result');
     if (result.status === 'result') {
-      expect(result.result).toEqual({ statusCode: 500, body: 'internal error' });
+      expect(result.result).toEqual({
+        statusCode: 500,
+        body: 'internal error',
+      });
     }
   });
 
@@ -221,10 +224,18 @@ describe('runMiddleware', () => {
     const error = new Error('late throw');
     const result = await middleware.runMiddleware(
       {},
-      [async () => callback, async () => { throw error; }],
+      [
+        async () => callback,
+        async () => {
+          throw error;
+        },
+      ],
       mockHandler,
     );
     expect(result.status).toBe('result');
-    expect(callback).toHaveBeenCalledWith({ statusCode: 500, body: 'internal error' });
+    expect(callback).toHaveBeenCalledWith({
+      statusCode: 500,
+      body: 'internal error',
+    });
   });
 });

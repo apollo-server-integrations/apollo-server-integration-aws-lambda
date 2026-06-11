@@ -24,7 +24,13 @@ function createV2Event(
 
 type CapturedStream = {
   getBody: () => string;
-  getMetadata: () => { statusCode: number; headers: Record<string, string>; cookies?: string[] } | undefined;
+  getMetadata: () =>
+    | {
+        statusCode: number;
+        headers: Record<string, string>;
+        cookies?: string[];
+      }
+    | undefined;
 };
 
 function setupAWSLambdaMock(): CapturedStream {
@@ -222,7 +228,9 @@ describe('Stream Lambda Handler', () => {
     );
 
     expect(captured.getMetadata()?.statusCode).toBe(200);
-    expect(JSON.parse(captured.getBody())).toEqual({ data: { hello: 'world' } });
+    expect(JSON.parse(captured.getBody())).toEqual({
+      data: { hello: 'world' },
+    });
   });
 
   it('short-circuits and ends the stream when middleware returns metadata', async () => {

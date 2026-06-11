@@ -25,19 +25,21 @@ export interface StreamRequestHandler<EventType> {
 
 export type RequestHandlerEvent<
   T extends RequestHandler<any, any> | StreamRequestHandler<any>,
-> = T extends StreamRequestHandler<infer EventType>
-  ? EventType
-  : T extends RequestHandler<infer EventType, any>
-  ? EventType
-  : never;
+> =
+  T extends StreamRequestHandler<infer EventType>
+    ? EventType
+    : T extends RequestHandler<infer EventType, any>
+      ? EventType
+      : never;
 
 export type RequestHandlerResult<
   T extends RequestHandler<any, any> | StreamRequestHandler<any>,
-> = T extends StreamRequestHandler<any>
-  ? awslambda.HttpMetadata
-  : T extends RequestHandler<any, infer ResultType>
-  ? ResultType
-  : never;
+> =
+  T extends StreamRequestHandler<any>
+    ? awslambda.HttpMetadata
+    : T extends RequestHandler<any, infer ResultType>
+      ? ResultType
+      : never;
 
 export type EventParser<EventType> =
   | {
