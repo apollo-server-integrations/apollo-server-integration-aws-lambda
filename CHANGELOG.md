@@ -1,5 +1,17 @@
 # @as-integrations/aws-lambda
 
+## 4.0.1
+
+### Patch Changes
+
+- [#197](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/197) [`5ee8ee8`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/5ee8ee86667425eadee75d9f1fe6c852373b4ce6) Thanks [@jay-l-e-e](https://github.com/jay-l-e-e)! - Fixed an issue where Apollo V4 was being installed because peer dependencies were not restricted to Apollo V5.
+
+## 4.0.0
+
+### Major Changes
+
+- [#194](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/pull/194) [`6ddf17b`](https://github.com/apollo-server-integrations/apollo-server-integration-aws-lambda/commit/6ddf17bd0f26a20e2c8f127fb4a105b7d165c7e2) Thanks [@jay-l-e-e](https://github.com/jay-l-e-e)! - Upgrade all essential dependencies to support apollo server v5
+
 ## 3.1.0
 
 ### Minor Changes
@@ -103,7 +115,6 @@
   ```
 
   The 3 event handlers provided by the package are:
-
   - `createAPIGatewayProxyEventV2RequestHandler()`
   - `createALBEventRequestHandler()`
   - `createAPIGatewayProxyEventRequestHandler()`
