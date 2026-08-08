@@ -41,10 +41,10 @@
     "@changesets/cli": "2.31.1",
     "@types/jest": "30.0.0",
     "@types/node": "22.20.1",
-    "@typescript-eslint/eslint-plugin": "8.65.0",
-    "@typescript-eslint/parser": "8.65.0",
+    "@typescript-eslint/eslint-plugin": "8.66.0",
+    "@typescript-eslint/parser": "8.66.0",
     "cspell": "10.0.1",
-    "eslint": "10.8.0",
+    "eslint": "10.8.1",
     "jest": "30.4.2",
     "jest-junit": "17.0.0",
     "prettier": "3.9.6",
@@ -56,7 +56,7 @@
     "@apollo/server": "^5.0.0"
   },
   "volta": {
-    "node": "24.18.1",
+    "node": "24.19.0",
     "npm": "11.19.0"
   }
 }
