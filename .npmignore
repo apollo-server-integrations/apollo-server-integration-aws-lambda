@@ -7,4 +7,6 @@ dist/**/__tests__/**
 !README.md
 !tsconfig.base.json
 !tsconfig.json
+!tsconfig.build.cjs.json
+!tsconfig.build.esm.json
 !tsconfig.build.json
