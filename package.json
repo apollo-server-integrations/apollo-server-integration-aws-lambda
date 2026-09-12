@@ -40,10 +40,10 @@
     "@changesets/changelog-github": "0.7.0",
     "@changesets/cli": "2.31.1",
     "@types/jest": "30.0.0",
-    "@types/node": "22.20.1",
-    "@typescript-eslint/eslint-plugin": "8.69.0",
-    "@typescript-eslint/parser": "8.69.0",
-    "cspell": "10.2.2",
+    "@types/node": "22.20.2",
+    "@typescript-eslint/eslint-plugin": "8.70.0",
+    "@typescript-eslint/parser": "8.70.0",
+    "cspell": "10.3.0",
     "eslint": "10.10.0",
     "jest": "30.5.1",
     "jest-junit": "17.0.0",
@@ -56,7 +56,7 @@
     "@apollo/server": "^5.0.0"
   },
   "volta": {
-    "node": "24.20.0",
+    "node": "24.21.0",
     "npm": "11.19.1"
   }
 }
